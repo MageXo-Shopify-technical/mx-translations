@@ -441,7 +441,7 @@
           "type": "text_block",
           "settings": {
             "icons": "at-truck-l",
-            "title": "<b>Dorucime do 5 ti/<b></b></b>",
+            "title": "<b>Dorucime do 5 ti</b>",
             "text": "Add feature short description text here",
             "texturl": ""
           }
