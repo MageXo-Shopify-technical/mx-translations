@@ -1,0 +1,466 @@
+{%- capture heroBanner -%}
+<div class="content-indent{% if section.settings.hide_mobile %} small--hide{% endif %} {{ section.settings.top-offeset}}">
+  <div class="{% unless section.settings.section_width %}page-width {% else %}fullwidth-{{section.id}} {% endunless %}">
+    <div class="fl pr f-col hero shop-buttons pd0 hero-{{ section.id }} f-jcc f-aic tc wow fadeIn">
+      	   {% if section.settings.dis_img %}
+             {% if section.settings.image != blank %}
+                <div class="heroImg lazyload{% if section.settings.mb_image != blank %} small--hide{% endif %}"
+                    data-bgset="{% include 'bgset', image: section.settings.image %}" data-sizes="auto" data-parent-fit="contain"
+                    style="background-image: url('{% comment ls-rpl %}{{ section.settings.image | img_url: '100x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: section.settings.image, img_url: '100x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}'); background-position:center {{ section.settings.alignment }};{% if section.settings.parallax_scroll %}background-attachment:fixed;{% endif %}"
+                    {% if section.settings.parallax_scroll %} data-stellar-background-ratio="0.08" data-stellar-vertical-offset="0" {% endif %}></div>
+             {% endif %}
+             {% if section.settings.mb_image != blank %}
+                <div class="heroImg medium-up--hide lazyload" data-bgset="{% include 'bgset', image: section.settings.mb_image %}" data-sizes="auto" data-parent-fit="contain"
+                    style="background-image:url('{% comment ls-rpl %}{{ section.settings.mb_image | img_url: '100x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: section.settings.mb_image, img_url: '100x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}'); background-position:center {{ section.settings.alignment }};"></div>
+             {% endif %}
+             {% if section.settings.image == blank %}<div class="ph_bg">{{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg svgcl4' }}</div>{% endif %}
+	       {% endif %}
+        <div class="hero_txt pr tc mr15 ml15">                         
+          {% unless section.settings.title == blank %}
+          	<h2 class="hero_hd2 hero_hd2-{{section.id}}">{{ section.settings.title  }}</h2>
+          {% endunless %}   
+          
+          {% unless section.settings.hero_hd3 == blank %}
+         	 <div class="hero_hd3 hero_hd3-{{section.id}}{% if section.settings.hero_hd3_hide %} small--hide{% endif %}">{{ section.settings.hero_hd3 }}</div>
+          {% endunless %}                            
+          
+          <div class="shop_btns fl f-jcc f-wrap">
+            {% for block in section.blocks limit: section.blocks.size %}    
+              {% if block.settings.button_label != blank or block.settings.button_link != blank %}
+                <a href="{{ block.settings.button_link }}" class="btn {{section.settings.btn-size}} {{section.settings.btn-style}}">{{ block.settings.button_label | escape }}</a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+<style> 
+ 
+    
+  .hero-{{ section.id }} { background-color:{{section.settings.img_bg }};}  
+  .hero-{{ section.id }},.hero-{{ section.id }} h2  { color:{{ section.settings.txt_clr}};}   
+  
+  .hero_hd2-{{section.id}} { line-height:{{ section.settings.hd2_lh}}; letter-spacing:0.0{{ section.settings.hd2_ls}}em; }
+  .hero_hd3-{{section.id}} { line-height:{{ section.settings.hd3_lh}}; letter-spacing:0.0{{ section.settings.hd3_ls}}em;}
+  
+  @media only screen and (min-width: 1025px) {    
+    .hero-{{section.id}} { height:{{section.settings.ds_height}}px; }  
+  }   
+  @media only screen and (min-width:768px) and (max-width: 1024px) {       
+    .hero-{{section.id}} { height:{{section.settings.tb_height}}px; } 
+
+  } 
+  @media only screen and (min-width: 768px) { 
+    {%- if section.settings.section_width -%}
+     .fullwidth-{{section.id}} { padding-left:{{ section.settings.pad-desk}}px; padding-right:{{ section.settings.pad-desk}}px; }
+    {%- endif -%}
+    
+     .hero_hd2-{{section.id}} { font-size:{{section.settings.hd2_fs}}px; margin-bottom:{{section.settings.hd2_mb}}px;  }    
+     .hero_hd3-{{section.id}} { font-size:{{section.settings.hd3_fs}}px; margin-bottom:{{section.settings.hd3_mb}}px; }            
+  }
+  @media only screen and (max-width: 767px) {    
+    {%- if section.settings.section_width -%}
+    .fullwidth-{{section.id}} { padding-left:{{ section.settings.pad-mbl}}px; padding-right:{{ section.settings.pad-mbl}}px; }
+    {%- endif -%}
+    
+    .hero-{{section.id}} { height:{{section.settings.mb_height}}px; } 
+
+    .hero_hd2-{{section.id}} { font-size:{{section.settings.hd2_fs_m}}px; margin-bottom:{{section.settings.hd2_mb_m}}px; }     
+    .hero_hd3-{{section.id}} { font-size:{{section.settings.hd3_fs_m}}px; margin-bottom:{{section.settings.hd3_mb_m}}px; }             
+     
+  }
+</style>
+{%- endcapture -%}
+{{heroBanner | strip_newlines | remove: "  " | remove: "	" }}
+
+{% schema %}
+  {
+    "name": "Parallax Banner",
+    "class": "index-section index-section--flush",
+    "settings": [
+	 {
+		 "type": "paragraph",
+		 "content":"[preview different style](https://optimal-demos.myshopify.com/pages/banner-with-shop-buttons)"
+      },	
+	  {
+        "type": "header",
+        "content": "Appearance Section ==="
+      },	 
+	  {
+            "type": "select",
+            "id": "top-offeset",
+            "label": "Top OffSet",
+            "default": "default",
+            "options": [
+              {
+                "value": "default",
+                "label": "Default"
+              },
+              {
+                "value": "small",
+                "label": "Small"
+              },
+			  {
+                "value": "none",
+                "label": "None"
+              }
+			]
+      }, 
+	   {
+           "type": "checkbox",
+           "id": "hide_mobile",
+           "label": "Hide Section in Mobile?",
+           "default": false
+        },	      
+ 	 {
+		"type":"checkbox",
+		"id":"section_width",
+		"label":"Fullwidth?",
+		"default": false
+	  },
+ 		{
+        "type": "paragraph",
+        "content": "Left/Right Padding for Fullwidth ==="
+      }, 	
+      {
+        "type": "range",
+        "id": "pad-desk",
+        "label": "Desktop",
+        "default": 55,
+        "min": 0,
+        "max": 100,
+        "step": 1
+      },      
+      {
+        "type": "range",
+        "id": "pad-mbl",
+        "label": "Mobile",
+        "default": 15,
+        "min": 0,
+        "max": 15,
+        "step": 1
+      }, 
+	 {
+        "type": "header",
+        "content": "Appearance Banner ==="
+      }, 	
+	  {
+		"type":"paragraph",
+		"content":"Height ==="
+	  },
+      {
+        "type": "range",
+        "id": "ds_height",
+        "label": "Desktop",
+        "default": 600,
+        "min": 100,
+        "max": 1000,
+        "step": 10
+      },
+      {
+        "type": "range",
+        "id": "tb_height",
+        "label": "Tablet",
+        "default": 350,
+        "min": 100,
+        "max": 1000,
+        "step": 10
+      },  
+	  {
+        "type": "range",
+        "id": "mb_height",
+        "label": "Mobile",
+        "default": 250,
+        "min": 100,
+        "max": 1000,
+        "step": 10
+      },  
+		{
+        "type": "checkbox",
+        "id": "dis_img",
+        "label": "Display Backgorund Image",
+		"default":true
+      },	 
+	 {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Upload Image",
+		"info": "Recommended width 1920px and height as per above desktop height"
+      },
+	 {
+            "type": "image_picker",
+            "id": "mb_image",
+            "label": "Mobile Image",
+			"info": "Recommended width 750px and height as per above mobile height. If mobile image is blank, dekstop image will be used."
+       },
+      {
+        "type": "select",
+        "id": "alignment",
+        "label": "Image Alignment",
+        "default": "center",
+        "options": [
+          {
+            "value": "top",
+            "label": "Top"
+          },
+          {
+            "value": "center",
+            "label": "Middle"
+          },
+          {
+            "value": "bottom",
+            "label": "Bottom"
+          }
+        ]
+      },
+	{
+        "type": "color",
+        "id": "img_bg",
+        "label": "Background Color",
+        "default": "#f5f5f5",
+		"info":"Applicable when you want solid background color only"
+     },	
+	{
+        "type": "checkbox",
+        "id": "parallax_scroll",
+        "label": "Enable Parallax Scrolling",
+        "default":true,
+		"info":"For Parallax Effect Recommanded Image Size 1900x1000. Effect will not work on mobile device."
+      },		    
+     {
+            "type":"header",
+            "content":"Big Heading"	
+          },
+          {
+            "type": "textarea",
+            "id": "title",
+            "label": "Text",
+            "default": " FALL/WINTER NEW COLLECTION"			
+          },		
+          {
+              "type": "range",
+              "id": "hd2_fs",
+              "label": "Font Size",
+              "default": 30,
+              "min": 10,
+              "max": 100,
+              "step": 1,
+              "unit": "px"
+          }, 
+ 			{
+              "type": "range",
+              "id": "hd2_lh",
+              "label": "Line Height",
+              "default": 1.2,
+              "min": 1.0,
+              "max": 2.0,
+              "step": 0.1
+          }, 	
+            {
+            "type": "range",
+            "id": "hd2_ls",
+            "label": "Letter Spacing",
+            "default": 0,
+            "min": 0,
+            "max": 9,
+            "step": 1,
+            "unit": "em"
+          },
+ 		  {
+            "type": "range",
+            "id": "hd2_mb",
+            "label": "Margin Bottom",
+            "default": 10,
+            "min": 5,
+            "max": 50,
+            "step": 1,
+            "unit": "px"
+          },
+			{
+              "type": "range",
+              "id": "hd2_fs_m",
+              "label": "Font Size (mobile)",
+              "default": 20,
+              "min": 10,
+              "max": 50,
+              "step": 1,
+              "unit": "px"
+          }, 		           
+ 		  {
+            "type": "range",
+            "id": "hd2_mb_m",
+            "label": "Margin Bottom (mobile)",
+            "default": 10,
+            "min": 5,
+            "max": 30,
+            "step": 1,
+            "unit": "px"
+          },
+		 {
+            "type":"header",
+            "content":"Content"	
+          },
+          {
+            "type": "textarea",
+            "id": "hero_hd3",
+            "label": "Text",
+            "default": "Amet minim mollit non deserunt ullamco <br/> est sit aliqua dolor do amet sint."			
+          },
+		 {
+            "type": "checkbox",
+            "id": "hero_hd3_hide",
+            "label": "Hide in mobile?",
+            "default": false			
+          },		
+         {
+              "type": "range",
+              "id": "hd3_fs",
+              "label": "Font Size",
+              "default": 16,
+              "min": 10,
+              "max": 100,
+              "step": 1,
+              "unit": "px"
+          }, 
+ 			{
+              "type": "range",
+              "id": "hd3_lh",
+              "label": "Line Height",
+              "default": 1.6,
+              "min": 1.0,
+              "max": 2.0,
+              "step": 0.1,
+              "unit": "em"
+          }, 	
+            {
+            "type": "range",
+            "id": "hd3_ls",
+            "label": "Letter Spacing",
+            "default": 2,
+            "min": 0,
+            "max": 9,
+            "step": 1,
+            "unit": "em"
+          },
+ 		  {
+            "type": "range",
+            "id": "hd3_mb",
+            "label": "Margin Bottom",
+            "default": 30,
+            "min": 5,
+            "max": 50,
+            "step": 1,
+            "unit": "px"
+          },
+			{
+              "type": "range",
+              "id": "hd3_fs_m",
+              "label": "Font Size (mobile)",
+              "default": 14,
+              "min": 10,
+              "max": 50,
+              "step": 1,
+              "unit": "px"
+          }, 		           
+ 		  {
+            "type": "range",
+            "id": "hd3_mb_m",
+            "label": "Margin Bottom (mobile)",
+            "default": 15,
+            "min": 5,
+            "max": 30,
+            "step": 1,
+            "unit": "px"
+          },          
+ 		 
+       {
+          "type": "color",
+          "id": "txt_clr",
+          "label": "Text Color",
+          "default": "#000"
+        },
+		 {
+        "type": "select",
+        "id": "btn-style",
+        "label": "Select Button",
+        "default": "btn1",
+		"info":"Set button style from Theme Settings -> Fonts and Colors --> Buttons",
+        "options": [
+          {
+            "label": "Solid Button 1",
+            "value": "btn1"
+          },
+          {
+            "label": "Solid Button 2",
+            "value": "btn2"
+          },
+		  {
+            "label": "Solid Button 3",
+            "value": "btn3"
+          },
+ 		  {
+            "label": "Border Button 1",
+            "value": "bdr-btn1"
+          },
+ 		{
+            "label": "Border Button 2",
+            "value": "bdr-btn2"
+          } 
+        ]
+        },
+      {
+        "type": "select",
+        "id": "btn-size",
+        "label": "Button Size",
+        "default": "btn-med",
+        "options": [
+            {
+              "label": "Small",
+              "value": "btn-small"
+            },
+            {
+              "label": "Medium",
+              "value": "btn-med"
+            },
+            {
+              "label": "Large",
+              "value": "btn-large"
+            } 		  
+         ]
+      }          
+    ],
+      "blocks": [
+      {
+        "type": "shop_button",
+        "name": "Shop Button",
+        "settings": [
+            {
+            "label": "Button Label",
+            "id": "button_label",
+            "type": "text",
+            "default":"Button Label"
+            },
+            {
+            "type":"url",
+            "id":"button_link",
+            "label":"Button Link"			
+            }
+         ]
+        }
+      ],
+      "presets": [
+      {
+        "name": "2 - Banner With Shop Buttons",       
+        "blocks": [
+            {
+            "type": "shop_button"
+            },
+            {
+            "type": "shop_button"
+            }          	  
+          ]
+        }
+   ]
+  }
+{% endschema %}

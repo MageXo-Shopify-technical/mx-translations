@@ -1,0 +1,208 @@
+{%- comment -%}*** Top Promobar ***{%- endcomment -%}
+{%- section 'promotion-bar' -%}
+
+{%- capture navigation -%}{% section 'navigation' %}{%- endcapture -%}
+{%- if navigation contains '<!--mmobile-->' -%}{% assign endiv = '</div>'  %}{%- endif -%}
+{%- assign desktopnav = navigation | split: '<!--mmobile-->' | first | append: endiv -%}
+{%- assign mobilenav = navigation | split: '<!--mmobile-->' | last | split: '<!--mmobileend -->' | first -%}
+
+{%- capture siteHeader -%}
+
+{% comment %}*** Top Bar ***{% endcomment %}
+{% assign topheaderMb = '' %}
+{%- if settings.leftTxt-mobile and settings.centerTxt-mobile and settings.rightTxt-mobile -%}
+	{% assign topheaderMb = 'small--hide medium--hide' %}
+{%- endif -%}
+{%- if settings.topbar -%}
+<div class="top_hdr_wrap">
+	<div class="fl top_hdr{% unless settings.topbar_fullwidth %} page-width{% endunless %} {{topheaderMb}}">
+		{%- if settings.leftTxt != blank -%}
+			<div class="left-hdr{% if settings.leftTxt-mobile %} small--hide medium--hide{% else %} small--text-center{% endif %}">
+				{%- if settings.leftTxt contains "[social-icons]"-%}
+					{%- assign topLeftTxt = settings.leftTxt | split: "[social-icons]" -%}
+					{{topLeftTxt[0]}} {% render 'social-media' %} {{topLeftTxt[1]}}
+				{%- else -%}
+					{{ settings.leftTxt }}
+				{%- endif -%}
+			</div>
+		{%- endif -%}
+		{%- if settings.centerTxt != blank -%}
+			<div class="middle-hdr tc{% if settings.centerTxt-mobile %} small--hide medium--hide{% endif %}">{{ settings.centerTxt }}</div>
+		{%- endif -%}
+		{%- if settings.rightTxt != blank -%}
+			<div class="right-hdr tr{% if settings.rightTxt-mobile %} small--hide medium--hide{% else %} small--text-center{% endif %}">
+				{%- if settings.rightTxt contains "[social-icons]"-%}
+					{% assign topRightTxt = settings.rightTxt | split: "[social-icons]" %}
+					{{topRightTxt[0]}} {% include 'social-media' %} {{topRightTxt[1]}}
+				{%- else -%}
+					{{settings.rightTxt}}
+				{%- endif -%}
+			</div>
+		{%- endif -%}
+	</div>
+</div>
+{%- endif -%}
+
+{% comment %}*** Main Header ***{% endcomment %}
+{%- capture logo -%}
+	<{% if template == 'index'%}h1 {% else %}div {% endif %}class="fl1 header-logo">
+		<a href="{{ routes.root_url }}" itemprop="url" class="hdr_logo_lnk">
+          	{%- capture logoWidth -%}{{settings.logo_width}}x{%- endcapture -%}
+			{%- if settings.home_classic and template == 'index' and settings.logo_cl != blank -%}
+				<img src="{% comment ls-rpl %}{{ settings.logo_cl | img_url: logoWidth }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo_cl, img_url: logoWidth -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" width="{{settings.logo_width}}" height="{{settings.logo_width | divided_by: settings.logo_cl.aspect_ratio | floor}}" class="cllogo" alt="{% comment ls-rpl %}{{ settings.logo_cl.alt | default: shop.name }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: settings.logo_cl -%}{%- endcapture -%}{{ LS_ALT | default: shop.name }}{% comment /ls-rpl %}{% endcomment %}" srcset="{% comment ls-rpl %}{{ settings.logo_cl | img_url: logoWidth, scale: 2 }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo_cl, img_url: logoWidth, scale: 2 -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1x, {% comment ls-rpl %}{{ settings.logo_cl | img_url: logoWidth, scale: 4 }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo_cl, img_url: logoWidth, scale: 4 -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1.1x">
+          		{%- if settings.logo != blank -%}
+                    <img src="{% comment ls-rpl %}{{ settings.logo | img_url: logoWidth }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo, img_url: logoWidth -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" width="{{settings.logo_width}}" height="{{settings.logo_width | divided_by: settings.logo.aspect_ratio | floor}}" class="stlogo" alt="{% comment ls-rpl %}{{ settings.logo.alt | default: shop.name }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: settings.logo -%}{%- endcapture -%}{{ LS_ALT | default: shop.name }}{% comment /ls-rpl %}{% endcomment %}" srcset="{% comment ls-rpl %}{{ settings.logo | img_url: logoWidth, scale: 2 }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo, img_url: logoWidth, scale: 2 -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1x, {% comment ls-rpl %}{{ settings.logo | img_url: logoWidth, scale: 4 }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo, img_url: logoWidth, scale: 4 -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1.1x">
+                {%- else -%}
+                    <img src="{{ settings.logosvg | file_url }}" width="{{settings.logo_width}}" height="50" class="stlogo" alt="{% comment ls-rpl %}{{ settings.logosvg.alt | default: shop.name }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: settings.logosvg -%}{%- endcapture -%}{{ LS_ALT | default: shop.name }}{% comment /ls-rpl %}{% endcomment %}">
+                {%- endif -%}
+			{%- elsif settings.logo != blank -%}
+				<img src="{% comment ls-rpl %}{{ settings.logo | img_url: logoWidth }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo, img_url: logoWidth -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" width="{{settings.logo_width}}" height="{{settings.logo_width | divided_by: settings.logo.aspect_ratio | floor}}" alt="{% comment ls-rpl %}{{ settings.logo.alt | default: shop.name }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: settings.logo -%}{%- endcapture -%}{{ LS_ALT | default: shop.name }}{% comment /ls-rpl %}{% endcomment %}" srcset="{% comment ls-rpl %}{{ settings.logo | img_url: logoWidth, scale: 2 }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo, img_url: logoWidth, scale: 2 -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1x, {% comment ls-rpl %}{{ settings.logo | img_url: logoWidth, scale: 4 }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo, img_url: logoWidth, scale: 4 -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1.1x">
+			{%- elsif settings.logosvg != blank -%}
+				<img src="{{ settings.logosvg | file_url }}" width="{{settings.logo_width}}" height="50" alt="{% comment ls-rpl %}{{ settings.logosvg.alt | default: shop.name }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: settings.logosvg -%}{%- endcapture -%}{{ LS_ALT | default: shop.name }}{% comment /ls-rpl %}{% endcomment %}">
+			{%- else -%}
+				{{ shop.name }}
+			{%- endif -%}
+			<span class="hidden_txt">{{ shop.name }}</span>
+		</a>
+	</{% if template == 'index'%}h1{% else %}div{% endif %}>
+{%- endcapture -%}
+{%- capture textblock -%}
+	{%- if settings.hdTxt-block contains "[social-icons]"-%}
+		{%- assign headerTxt = settings.hdTxt-block | split: "[social-icons]" -%}
+		{{headerTxt[0]}} {% include 'social-media' %} {{headerTxt[1]}}
+	{%- elsif settings.hdTxt-block contains "[search]" -%}
+		{% if settings.enable_search %}{% include 'search-form' with 'solid-search' %}{% endif %}
+	{%- else -%}
+		{{ settings.hdTxt-block }}
+	{%- endif -%}
+{%- endcapture -%}
+<div id="header" data-section-id="header" data-section-type="header-section">
+	<div id="hdr_wrap" {% if settings.home_classic and template == "index" %}class="cl_hdr"{% endif %}>
+		<header class="{% if settings.align_logom == 'center' %}logo-mc {% endif %}fl main_hdr {{settings.align_logo}}{% if settings.nav_below_logo %} nav-below{% endif %}{% unless settings.main_header_fullwidth %} page-width{% endunless %}">
+			<div class="fl1 mobile-nav large-up--hide">
+				<a href="#" class="hdicon js-mobile-nav-toggle open"><i class="at at-bars-l" aria-hidden="true"></i><i class="at at-times-l" aria-hidden="true"></i></a>
+
+                {% if settings.align_logom == 'center' %}                  	
+                  <a href="#" class="hdicon search-icn {% if settings.hdTxt-block contains "[search]" and settings.nav_below_logo == true %}mob-only{% endif %}" {% if settings.store-search != "text" %}title="{{ settings.searchtxt}}"{% endif %}>
+                    <i class="at at-search-l{% if settings.store-search == "text" %} large-up--hide{% endif %}"></i>
+                    {% if settings.store-search == "text" or settings.store-search == "bothsearch" %}<span class="base-lbl small--hide medium--hide{% if settings.store-search == "bothsearch" %} icon-txt{% endif %}">{{ settings.searchtxt}}</span>{% endif %}
+                  </a>                  	                  	                 
+                {% endif %}
+              
+			</div>
+			{%- if settings.align_logo == "left" -%}{{logo}}{%- endif -%}
+			{%- if settings.nav_below_logo -%}
+				<div class="fl1 txtBlock small--hide medium--hide{% if settings.align_logo == "left" %} tc{% endif %}">{{textblock}}</div>
+			{%- else -%}
+				{{desktopnav}}
+			{%- endif -%}
+			{% if settings.align_logo == "center" %}{{logo}}{% endif %}
+				<div class="fl fl1 icons-col tr">
+                  
+				<div class="hdicon popu_trigger site_set" title="{{ 'layout.header_settingbox.icon_tooltip' | t }}"><i class="at {{settings.currency_icon}}"></i></div>
+
+
+                  {% if settings.enable_search %}                  	
+                  <a href="#" class="hdicon search-icn{% if settings.hdTxt-block contains "[search]" and settings.nav_below_logo == true %} mob-only{% endif %}{% if settings.align_logom == 'center' %} mob-search-r{% endif %}" {% if settings.store-search != "text" %}title="{{ settings.searchtxt}}"{% endif %}>
+                    <i class="at at-search-l{% if settings.store-search == "text" %} large-up--hide{% endif %}"></i>
+                    {% if settings.store-search == "text" or settings.store-search == "bothsearch" %}<span class="base-lbl small--hide medium--hide{% if settings.store-search == "bothsearch" %} icon-txt{% endif %}">{{ settings.searchtxt}}</span>{% endif %}
+                  </a>                  	                  	
+                  {% endif %}
+                  
+                   {% if shop.customer_accounts_enabled %}
+                      <a class="hdicon user-menu"  {% if settings.account-login != "text" %}title="{% if customer %}{{ settings.accountxt}}{% else %}{{ 'customer.account.logout' | t }}{% endif %}"{% endif %}>
+                        <i class="at {{ settings.user_icon }}{% if settings.account-login == "text" %} large-up--hide{% endif %}"></i>
+                        {% if settings.account-login == "text" or settings.account-login == "loginboth" %}<span class="base-lbl small--hide medium--hide{% if settings.account-login == "loginboth" %} icon-txt{% endif %}">{{ settings.accountxt}}</span>{% endif %}
+                      </a>                  	
+                      {% include 'user-links' %}
+                   {% endif %}
+					
+                   {%- unless settings.catalog-mode -%}
+						<a href="{% if settings.cartopt == 'popup' %}#cartPopup{% else %}{{routes.cart_url}}{% endif %}" class="hdicon{% if settings.ajax_cart %} header-cart{% endif %}"  {% if settings.store-cart != "text" %}title="{{ settings.carttext}}{% endif %}">
+                          <i class="at {{settings.cart_icon}}{% if settings.store-cart == "text" %} large-up--hide{% endif %}"></i>
+                          {% if settings.store-cart == "text" or settings.store-cart == "cartboth"  %}<span class="base-lbl small--hide medium--hide{% if settings.store-cart == "cartboth" %} icon-txt{% endif %}">{{ settings.carttext}}</span>{% endif %}
+                          {% unless settings.store-cart == "cartboth" %} <span id="CartCount" data-cart-render="item_count">{{cart.item_count}}</span> {% endunless %}
+                      </a>     
+                  	{%- endunless -%}
+                    
+                  	{% if settings.show_multiple_currencies or settings.show_language %}
+						<a href="#" class="hdicon site_set" title="{{ 'layout.header_settingbox.icon_tooltip' | t }}"><i class="at {{settings.currency_icon}}"></i></a>
+                  		{% include 'settingbox' %}
+                  	{% endif %}
+
+				</div>
+		</header>
+		{%- if settings.nav_below_logo -%}{{desktopnav}}{%- endif -%}
+      
+      	{% comment %} search popup {% endcomment %}
+        <div id="s_pop"> 
+          {% unless settings.main_header_fullwidth %}<div class="page-width">{% endunless %}
+          	{% include 'search-form' with 'close' %}
+          {% unless settings.main_header_fullwidth %}</div>{% endunless %}
+        </div>
+	</div>
+</div>
+{{mobilenav}}
+
+{%- assign logoUrl = "" -%}
+{%- if settings.logosvg != blank -%}
+	{%- assign logoUrl = settings.logosvg | file_url -%}
+{%- elsif settings.logo != blank -%}
+	{% comment ls-rpl %}{%- assign logoUrl = settings.logo | img_url: '500x' -%}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.logo, img_url: '500x' -%}{%- endcapture -%}{%- assign logoUrl = LS_IMG_URL -%}{% comment /ls-rpl %}{% endcomment %}
+{%- endif -%}
+
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "{{ shop.name }}",
+  {% if logoUrl != blank %}
+    "logo": "https:{{logoUrl}}",
+  {% endif %}
+  "sameAs": [
+    "{{ settings.social_twitter_link }}",
+    "{{ settings.social_facebook_link }}",
+    "{{ settings.social_pinterest_link }}",
+    "{{ settings.social_instagram_link }}",
+    "{{ settings.social_tumblr_link }}",
+    "{{ settings.social_snapchat_link }}",
+    "{{ settings.social_youtube_link }}",
+    "{{ settings.social_vimeo_link }}"
+  ],
+  "url": "{{ shop.url }}{{ page.url }}"
+}
+</script>
+
+{% if template.name == 'index' %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": "{{ shop.name }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ shop.url }}/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "url": "{{ shop.url }}{{ page.url }}"
+    }
+  </script>
+{% endif %}
+
+{% style %}
+#main_nav > li > a[href="{{routes.root_url}}/collections/sales"],
+#mob_nav > li > a[href="{{routes.root_url}}/collections/sales"] {
+  color: #cf222e;
+}
+
+@media only screen and (min-width: 1025px) {
+  #main_nav > li:hover > a[href="{{routes.root_url}}/collections/sales"] {
+    color: {{ settings.navbar_link_hv }};
+  }
+}
+{% endstyle %}
+
+
+{%- endcapture -%}
+{{siteHeader | strip_newlines | remove: "  " | remove: "	" }}

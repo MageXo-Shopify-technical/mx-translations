@@ -1,0 +1,55 @@
+{%- layout none -%}
+
+[
+{%- assign target_collections = 'memorabilia,sold-out-memorabilia' | split: ',' -%}
+{%- assign first_item = true -%}
+{%- for handle in target_collections -%}
+  {%- assign col = collections[handle] -%}
+  {%- if col.products_count | plus: 0 > 0 -%}
+    {%- for product in col.products -%}
+      {%- assign serials = product.metafields.custom.verification_serials.value -%}
+      {%- for serial in serials -%}
+        {%- unless first_item -%},{%- endunless -%}
+        {%- assign first_item = false -%}
+        { "serial": {{ serial | upcase | json }}, "title": {{ product.title | json }}, "product_title": {{ product.title | json }},
+        "autograph": {{ product.metafields.custom.verification_autograph.value | json }}, "date":
+        {{ product.metafields.custom.verification_date.value | date: '%B %e, %Y' | json }}, "about":
+        {{ product.metafields.custom.verification_description.value | strip_newlines | escape | json }}, "image":
+        {{ product.images.first | image_url: width: 800 | json }}, "gallery": [
+        {%- for img in product.images -%}
+          {{ img | image_url: width: 800 | json }}
+          {%- unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+        ] }
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}
+]
+
+{% comment %}
+  [
+  {%- assign target_collections = 'memorabilia' | split: ',' -%}
+  {%- assign first_item = true -%}
+  {%- for handle in target_collections -%}
+    {%- assign col = collections[handle] -%}
+    {%- if col.products_count | plus: 0 > 0 -%}
+      {%- for product in col.products -%}
+        {%- assign verifications = product.metafields.custom.product_verifications.value -%}
+        {%- for v in verifications -%}
+          {%- unless first_item -%},{%- endunless -%}
+          {%- assign first_item = false -%}
+          { "serial": {{ v.serial_number | json }}, "title": {{ v.title | json }}, "product_title": {{ product.title | json }}, "autograph":
+          {{ v.autograph | json }}, "date": {{ v.signing_date | date: '%B %e, %Y' | json }}, "about":
+          {{ v.about | strip_newlines | escape | json }}, "image": {{ v.main_image | image_url: width: 800 | json }}, "gallery": [
+          {%- for img in v.gallery.value -%}
+            {{ img | image_url: width: 600 | json -}}
+            {%- unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+          ] }
+        {%- endfor -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+  ]
+{% endcomment %}

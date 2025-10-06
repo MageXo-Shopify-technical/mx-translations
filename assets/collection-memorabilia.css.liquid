@@ -1,0 +1,83 @@
+/* Custom CSS for this specific collection */
+
+/* Background of the whole section | Add relative position */
+#template--14347659149367__banner {
+  background-color: #2f2f2f;
+  position: relative;
+  padding-bottom: 30px !important;
+}
+
+/* Custom div for yellow stripe at the top */
+.memorabilia_yellow_bg {
+  background: #ffd200 !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(36px + 30px + 368px);
+  z-index: 0;
+  overflow: hidden;
+
+}
+
+@media screen and (max-width: 1300px){
+  .memorabilia_yellow_bg {
+    height: 0;
+    padding-top: calc(382/1007 * 100% - 58px);
+  }
+}
+
+@media screen and (max-width: 1024px){
+  .memorabilia_yellow_bg {
+    height: 0;
+     padding-top: calc(382/1007 * 100% + 55px);
+  }
+}
+
+/* Breadcrumbs bar | Add relative position and z index to be above .memorabilia_yellow_bg  */
+.bc_wr {
+  position: relative; 
+  z-index: 1;
+  background: #ffd200 !important;
+  margin-bottom: 30px !important;
+}
+
+/* Main collection div | Add relative position and z index to be above .memorabilia_yellow_bg */
+#Collection {
+  position: relative; 
+  z-index: 1;
+}
+
+/* Collection products count */
+.collection-product-count {
+  color: #f9f9f9 !important;
+}
+
+/* Collection title */
+h1 {
+  color: #ffd200 !important;
+}
+
+/* Product image */
+.grid_img_wr {
+  border: 10px solid #ffd200 !important;
+}
+@media screen and (max-width: 600px){
+  .grid_img_wr {
+  border: 6px solid #ffd200 !important;
+}
+}
+
+/* Product title */
+.grid_bx .grid_title a {
+  color: #ffd200 !important;
+}
+/* Product price */
+.pr_price {
+  color: #f9f9f9 !important;
+}
+
+/* Fix footer margin for this collection */
+footer.o_ft {
+  margin-top: 0 !important;
+}

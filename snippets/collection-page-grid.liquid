@@ -1,0 +1,30 @@
+{% if subcollection %}
+  {%  assign collection_image = collection.products.first.featured_image %}
+  {%- assign aspectratio = collection.products.first.featured_image.aspect_ratio -%}
+{% else %}     
+  {%  assign collection_image = block.settings.image | default: collection.image %}
+  {%- assign aspectratio = block.settings.image.aspect_ratio | default:collection.image.aspect_ratio -%}
+{% endif %}
+{% comment ls-rpl %}{%- assign img_url = collection_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: collection_image, img_url: '1x1' -%}{%- endcapture -%}{%- assign img_url = LS_IMG_URL | replace: '_1x1.', '_{width}x.' -%}{% comment /ls-rpl %}{% endcomment %}
+<div class="cl_item">
+ <a href="{{ block.settings.url | default:collection.url }}" class="cl_item_link">   
+    <div class="img pr of_hidden">
+         {%- if collection_image != blank -%}
+        	<img class="img_fl lazyload" src="{% comment ls-rpl %}{{ collection_image | img_url: '50x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: collection_image, img_url: '50x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" data-src="{{ img_url }}" data-widths="[150, 300, 450, 600, 750, 900, 1200, 1500, 2000]" data-aspectratio="{{ collection_image.aspect_ratio }}" data-sizes="auto" alt="{% comment ls-rpl %}{{ collection_image.alt | escape }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: collection_image -%}{%- endcapture -%}{{ LS_ALT | escape }}{% comment /ls-rpl %}{% endcomment %}" />               
+         {% else %} 
+        	{% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+      		{% capture plClass %}placeholder-svg svgcl{{current}}{% endcapture %}
+      		{{ 'collection-' | append: current | placeholder_svg_tag: plClass }}
+         {% endif %}
+    </div> 
+    <div class="details {% if section.settings.txt-left %}txt-left{% endif %}"> 
+      	{% comment %} This is for sub collection list page {% endcomment %}
+      	{% if subcollection %}<h3 class="cl_item_ttl m0 fwr">{{ collection.title }}</h3>{% endif %} 
+        {% if block.settings.title != blank %}<h3 class="cl_item_ttl m0 fwr">{{ block.settings.title }}</h3>{% endif %} 
+        {% if section.settings.product_count %}<span class="counts mt5">{{ 'collections.general.items_with_count' | t: count: collection.all_products_count }}</span>{% endif %}            
+        {% if block.settings.collection_btn != blank %}
+      		<button class="btn {{section.settings.btn-size}} {{section.settings.btn-style}} mt15" type="button">{{block.settings.collection_btn}}</button>
+      	{% endif %}
+    </div>
+  </a>
+</div>

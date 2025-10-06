@@ -1,0 +1,70 @@
+{%- capture breadcrumbs -%}
+{% unless template == 'index' %}
+<div class="bc_wr {{settings.bc_case}}">
+    <nav class="page-width obc {{settings.bc_talign}}" role="navigation" aria-label="breadcrumbs">
+      
+      <a href="/" title="{{ 'general.breadcrumbs.home_link_title' | t }}">{{ 'general.breadcrumbs.home' | t }}</a>
+
+      {% if template contains 'product' %}
+
+      {% if collection %}
+        <span aria-hidden="true">|</span>
+        {% if collection.handle %}
+        {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+        {{ collection.title | link_to: url }}
+        {% endif %}
+      {% endif %}
+      <span aria-hidden="true" class="symbol">|</span>
+      <span class="fwb">{{ product.title }}</span>
+
+      {% elsif template contains 'collection' and collection.handle %}
+
+      <span aria-hidden="true" class="symbol">|</span>
+      {% if current_tags %}
+      {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+      {{ collection.title | link_to: url }}
+      <span aria-hidden="true" class="symbol">|</span>
+      <span>{% comment ls-rpl %}{{ current_tags | join: " + " }}{% endcomment %}{%- capture LS_TAGS -%}{%- render "ls-tags", resource: nil, tags: current_tags -%}{%- endcapture -%}{%- assign LS_TAGS = LS_TAGS | split: "," -%}{{ LS_TAGS | join: " + " }}{% comment /ls-rpl %}{% endcomment %}</span>
+      {% else %}
+      <span class="fwb">{{ collection.title }}</span>
+      {% endif %}
+
+      {% elsif template == 'blog' %}
+
+      <span aria-hidden="true">|</span>
+      {% if current_tags %}
+      {{ blog.title | link_to: blog.url }}
+      <span aria-hidden="true">|</span>
+      <span>{% comment ls-rpl %}{{ current_tags | join: " + " }}{% endcomment %}{%- capture LS_TAGS -%}{%- render "ls-tags", resource: nil, tags: current_tags -%}{%- endcapture -%}{%- assign LS_TAGS = LS_TAGS | split: "," -%}{{ LS_TAGS | join: " + " }}{% comment /ls-rpl %}{% endcomment %}</span>
+      {% else %}
+      <span class="fwb">{{ blog.title }}</span>
+      {% endif %}
+
+      {% elsif template == 'article' %}
+
+      <span aria-hidden="true">|</span>
+      {{ blog.title | link_to: blog.url }}
+      <span aria-hidden="true">|</span>
+      <span class="fwb">{{ article.title }}</span>
+
+      {% elsif template contains 'page' %}
+
+      <span aria-hidden="true" class="symbol">|</span>
+      <span class="fwb">{{ page.title }}</span>
+
+      {% elsif template contains 'cart' %}
+
+      <span aria-hidden="true" class="symbol">|</span>
+      <span class="fwb"> {{ 'cart.general.title' | t }}</span>
+
+      {% else %}
+
+      <span aria-hidden="true">|</span>
+      <span>{{ page_title }}</span>
+
+      {% endif %}
+    </nav>
+</div>
+{% endunless %}
+{%- endcapture -%}
+{{breadcrumbs | strip_newlines | remove: "  " | remove: "	" }}

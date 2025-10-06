@@ -1,0 +1,219 @@
+{{ 'memorabilia-authenticity.min.css' | asset_url | stylesheet_tag }}
+
+<style>
+  .memorabilia-authenticity--{{ section.id }} {
+    background-color: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+  }
+  :root {
+    --memorabilia-authenticity-button-bg: url('{{ 'button-shader.png' | asset_url }}');
+    --memorabilia-authenticity-button-bg-2: url('{{ 'button-shader-2.png' | asset_url }}');
+  }
+</style>
+<section class='memorabilia-authenticity memorabilia-authenticity--{{ section.id }} wow fadeIn'>
+  <div class='page-width'>
+    {% if section.settings.heading != blank %}
+      <h2 class='memorabilia-authenticity__heading h2' style='color: {{ section.settings.heading_color }};'>
+        {{ section.settings.heading | escape }}
+      </h2>
+    {% endif %}
+
+    {% if section.settings.subheading != blank %}
+      <div class='memorabilia-authenticity__subheading'>
+        {{ section.settings.subheading }}
+      </div>
+    {% endif %}
+
+    {% if section.settings.button_label != blank and section.settings.button_url != blank %}
+      <a href='{{ section.settings.button_url }}' class='memorabilia-authenticity__button button'>
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class='memorabilia-authenticity__info'>
+        {% for block in section.blocks %}
+          {% if block.type == 'info_point' %}
+            <div class='memorabilia-authenticity__info-point'>
+              {% if section.settings.icon != blank %}
+                <div class='memorabilia-authenticity__icon'>
+                  {{
+                    section.settings.icon
+                    | image_url: width: 50
+                    | image_tag: loading: 'lazy', class: 'memorabilia-authenticity__icon-image'
+                  }}
+                </div>
+              {% endif %}
+
+              {% if block.settings.heading != blank %}
+                <p class='memorabilia-authenticity__info-head'>
+                  {{ block.settings.heading }}
+                </p>
+              {% endif %}
+              <div class='memorabilia-authenticity__info-text'>
+                {{ block.settings.text }}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class='memorabilia-authenticity__images'>
+      {% if section.settings.image != blank %}
+        {{ section.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'memorabilia-authenticity__image' }}
+      {% endif %}
+      {% if section.settings.image_figcaption != blank %}
+        <div class='memorabilia-authenticity__images-figcaption'>
+          {{ section.settings.image_figcaption }}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <div class='memorabilia-authenticity__verify'>
+        {% for block in section.blocks %}
+          {% if block.type == 'verify_point' %}
+            <div class='memorabilia-authenticity__verify-point'>
+              {% if section.settings.icon != blank %}
+                <div class='memorabilia-authenticity__icon'>
+                  {{
+                    section.settings.icon
+                    | image_url: width: 50
+                    | image_tag: loading: 'lazy', class: 'memorabilia-authenticity__icon-image'
+                  }}
+                </div>
+              {% endif %}
+
+              {% if block.settings.heading != blank %}
+                <p class='memorabilia-authenticity__info-head'>
+                  {{ block.settings.heading }}
+                </p>
+              {% endif %}
+              <div class='memorabilia-authenticity__info-text'>
+                {{ block.settings.text }}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if section.settings.icon != blank %}
+      <div class='memorabilia-authenticity__icon'>
+        {{ section.settings.icon | image_url: width: 50 | image_tag: loading: 'lazy', class: 'memorabilia-authenticity__icon-image' }}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Memorabilia Authenticity",
+  "tag": "section",
+  "class": "section section-authenticity",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "OWN A PIECE OF HISTORY"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Verify Your Memorabilia"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "richtext",
+      "id": "image_figcaption",
+      "label": "Figcaption"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon",
+      "label": "Icon"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#2f2f2f"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffd100"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "info_point",
+      "name": "Info Point",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Info Text"
+        }
+      ]
+    },
+    {
+      "type": "verify_point",
+      "name": "Verify Point",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Verification Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Memorabilia Authenticity",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

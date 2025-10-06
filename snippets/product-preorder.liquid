@@ -1,0 +1,23 @@
+{%- liquid
+  assign estimated_date = estimated_date | default: null
+  assign date_format = date_format | default: 'basic'
+  case date_format
+    when 'days'
+      assign now = 'now' | date: '%s'
+      assign diffSeconds = estimated_date | date: '%s' | minus: now
+      assign diffDays = diffSeconds | divided_by: 86400
+      if diffDays == 1
+        assign str_estimated_delivery = 'products.pre_order.day.one' | t: days: diffDays
+      elsif diffDays < 5
+        assign str_estimated_delivery = 'products.pre_order.day.few' | t: days: diffDays
+      else
+        assign str_estimated_delivery = 'products.pre_order.day.many' | t: days: diffDays
+      endif
+    else
+      assign formatted_date = estimated_date | date: format: date_format
+      assign str_estimated_delivery = 'products.pre_order.date' | t: date: formatted_date
+  endcase
+-%}
+{%- if estimated_date -%}
+  <span class="preorder__estimated-delivery">{{ str_estimated_delivery }}</span>
+{%- endif -%}

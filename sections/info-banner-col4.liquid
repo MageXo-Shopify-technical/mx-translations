@@ -1,0 +1,410 @@
+{%- capture infoBanner -%}
+<div class="content-indent {{ section.settings.top-offeset}}{% if section.settings.hide_mobile %} small--hide{% endif %}">
+  {% if section.settings.section_cov %}<div class="section-cover" style="background-color:{{section.settings.sec_bg_clr}};">{% endif%}
+  <div class="{% unless section.settings.section_width %} page-width{% endunless %}">
+
+    {% for block in section.blocks limit: section.blocks.size %}        
+    
+    {%- capture image_layout -%}
+   <div class="row_item of_hidden fl fl1 w_100 f-aic jcc grp1 row_img {% if block.settings.layout == 'right' %}order1{% else %}order0{% endif %}">
+      {% if block.settings.image != blank %}
+      		{% if block.settings.button_link != blank %}<a class="db w_100" href="{{ block.settings.button_link}}">{% endif %}
+            <div class="imgWrapper w_100" style="max-width:{{ block.settings.image.width }}px;">
+              <div class="bgImg lazyload" data-bgset="{% render 'prgrid-img', image: block.settings.image, sizes: '380,550,750,980,1200' %}" data-sizes="auto" data-parent-fit="contain" style="padding-bottom:{{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100}}%;"></div>
+            </div>
+       	{% if block.settings.button_link != blank %}</a>{% endif%}
+      {% else %}      
+      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      
+      {% endif %}
+    </div>
+    {%- endcapture -%}
+    
+    {%- capture image_layout2 -%}
+    <div class="row_item of_hidden fl fl1 w_100 f-aic jcc grp2 row_img {% if block.settings.layout2 == 'right' %}order3{% else %}order2{% endif %}">
+      {% if block.settings.image2 != blank %}
+      	{% if block.settings.button_link2 != blank %}<a class="db w_100" href="{{ block.settings.button_link2}}">{% endif %}
+            <div class="imgWrapper" style="max-width:{{ block.settings.image2.width }}px;">
+              <div class="bgImg lazyload" data-bgset="{% render 'prgrid-img', image: block.settings.image2, sizes: '380,550,750,980,1200' %}" data-sizes="auto" data-parent-fit="contain" style="padding-bottom:{{ 1 | divided_by: block.settings.image2.aspect_ratio | times: 100}}%;"></div>
+            </div>
+       	{% if block.settings.button_link2 != blank %} </a> {% endif %}
+      {% else %}      
+      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}      
+      {% endif %}
+    </div>
+    {%- endcapture -%}     
+
+    {% assign box-delay = forloop.index | minus:1 %}
+    {% assign delay_time = 50 | times : box-delay %}    
+ 
+    <div class="ft_row fl f-aist f-jcsb w_100 ft_col4 row-{{ block.id }} wow fadeInUp" data-wow-delay="{{delay_time}}ms">        
+      
+      <!-- Column 1 -->      
+      {{ image_layout }}      
+      <div class="row_item of_hidden fl fl1 w_100 f-aic grp1 row_text{% if block.settings.layout == 'right' %} order0{% else %} order1{% endif %}">
+        <div class="row-text {{block.settings.text_align}}">
+          {% if block.settings.title != blank %}
+         	 <h3>{{ block.settings.title }}</h3>
+          {% endif %}
+          {% if block.settings.text != blank %}
+          	<div class="rte rte-setting mb20">{{ block.settings.text }}</div>
+          {% endif %}
+          {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+            <a href="{{ block.settings.button_link }}" class="btn {{section.settings.btn-size}} mt20">
+              {{ block.settings.button_label }}
+            </a>
+          {% endif %}
+        </div>
+      </div>           
+      
+       <!-- Column 2 -->        
+     {{ image_layout2 }}
+      <div class="row_item of_hidden fl fl1 w_100 f-aic grp2 row_text{% if block.settings.layout2 == 'right' %} order2{% else %} order3{% endif %}">
+        <div class="row-text {{block.settings.text_align2}}">
+          {% if block.settings.title2 != blank %}
+         	 <h3>{{ block.settings.title2 }}</h3>
+          {% endif %}
+          {% if block.settings.text2 != blank %}
+          	<div class="rte rte-setting mb20">{{ block.settings.text2 }}</div>
+          {% endif %}
+          {% if block.settings.button_label2 != blank and block.settings.button_link2 != blank %}
+            <a href="{{ block.settings.button_link2 }}" class="btn {{section.settings.btn-size}} mt20">
+              {{ block.settings.button_label2 }}
+            </a>
+          {% endif %}
+        </div>
+      </div>     
+      
+    </div>                  
+    
+    <style type="text/css">
+      .row-{{ block.id }} .grp1.row_text { background-color:{{block.settings.text_bg_clr}};}
+      .row-{{ block.id }} .grp1 h3  { color:{{block.settings.text_clr}};}
+      .row-{{ block.id }} .grp1 .rte { color:{{block.settings.text_clr}}; }
+      .row-{{ block.id }} .grp1 .btn { background:{{block.settings.button_bg_clr}}; border:2px solid {{ block.settings.button_bdr_clr}}; 
+        color:{{block.settings.button_text_clr}};}
+      .row-{{ block.id }} .grp1 .btn:hover {opacity:0.9;}
+      
+      .row-{{ block.id }} .grp2.row_text { background-color:{{block.settings.text_bg_clr2}};}
+      .row-{{ block.id }} .grp2 h3  { color:{{block.settings.text_clr2}};}
+      .row-{{ block.id }} .grp2 .rte { color:{{block.settings.text_clr2}}; }
+      .row-{{ block.id }} .grp2 .btn { background:{{block.settings.button_bg_clr2}}; border:2px solid {{ block.settings.button_bdr_clr2}}; 
+        color:{{block.settings.button_text_clr2}};}
+      .row-{{ block.id }} .grp2 .btn:hover {opacity:0.9;}
+      
+       @media only screen and (max-width: 999px) {
+        .row-{{ block.id }} .grp1.row_text { max-width:{{ block.settings.image.width }}px; margin:0 auto;}
+        .row-{{ block.id }} .grp2.row_text { max-width:{{ block.settings.image2.width }}px; margin:0 auto;}
+         
+      }
+      
+    </style>
+    
+    {% endfor %}  
+
+  </div>
+  {% if section.settings.section_cov %}</div> {% endif%}
+</div>
+{%- endcapture -%}
+{{infoBanner | strip_newlines | remove: "  " | remove: "	" }}
+{% schema %}
+  {
+    "name": "Image with Text - 4 Col",
+    "class": "index-section image-with-text",
+    "settings": [	  	 
+	  {
+            "type": "select",
+            "id": "top-offeset",
+            "label": "Top OffSet",
+            "default": "default",
+            "options": [
+              {
+                "value": "default",
+                "label": "Default"
+              },
+              {
+                "value": "small",
+                "label": "Small"
+              },
+			  {
+                "value": "none",
+                "label": "None"
+              }
+			]
+        },
+		{
+           "type": "checkbox",
+           "id": "hide_mobile",
+           "label": "Hide Section in Mobile?",
+           "default": false
+        },	
+		{
+		"type":"checkbox",
+		"id":"section_width",
+		"label":"Fullwidth?",
+		"default": true
+	  },
+		 {
+        "type": "checkbox",
+        "id": "section_cov",
+        "label": "Add Background?",
+        "default": false
+      },
+	  {
+        "type": "color",
+        "id": "sec_bg_clr",
+        "label": "Background",
+		"default":"#fafafa",
+		"info":"select light color"
+	  },  
+	   {
+        "type": "select",
+        "id": "btn-size",
+        "label": "Button Size",
+        "default": "btn-small",
+        "options": [
+          {
+            "label": "Small",
+            "value": "btn-small"
+          },
+          {
+            "label": "Medium",
+            "value": "btn-med"
+          },
+		  {
+            "label": "Large",
+            "value": "btn-large"
+          } 		  
+        ]
+      },
+	   {
+        "type": "paragraph",      
+        "content": "Set font size from --> Theme Settings --> Fonts and Colors --> Banner With Text - 4 Columns"
+      }
+    ],
+	 "blocks": [
+      {
+        "type": "image_with_text",
+        "name": "Block",
+        "settings": [
+			{
+            "type": "header",
+            "content": "Column 1 Image"            
+            },
+           {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+            },  
+          {
+              "type": "select",
+              "id": "layout",
+              "label":"Image alignment",
+              "default": "left",
+              "options": [
+              { "value": "left","label":"Left"},
+              { "value": "right","label":"Right"}
+              ]
+          },
+			{
+            "type": "header",
+            "content": "Column 2 Text"            
+            },
+      {
+        "type": "textarea",
+        "id": "title",
+        "label": "Heading",
+        "default": "SS 2022",
+		"info":"Use <strong>text here</strong> to make heading bold"
+      },
+      {
+        "type": "richtext",
+        "id": "text",
+        "label": "Text",
+        "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post.</p>"
+		
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button label",
+		"default": "Shop Now"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button link",
+		"default": "/"
+      },
+ 	  {
+            "type": "select",
+            "id": "text_align",
+            "label": "Text Align",
+            "default": "tl",
+            "options": [
+              {
+                "value": "tl",
+                "label": "Left"
+              },
+              {
+                "value": "tc",
+                "label": "Center"
+              },
+              {
+                "value": "tr",
+                "label": "Right"
+              }
+            ]
+      },
+	 {
+        "type": "header",
+        "content": "Appearance"
+      },
+      {
+        "type": "color",
+        "id": "text_clr",
+        "label": "Text Color",
+        "default": "#000"
+      },
+	 {
+        "type": "color",
+        "id": "text_bg_clr",
+        "label": "Background Color",
+        "default": "#eee"
+      },
+	  {
+        "type": "color",
+        "id": "button_bg_clr",
+        "label": "Button Background Color",
+		"default":"#000"
+      },
+	  {
+        "type": "color",
+        "id": "button_bdr_clr",
+        "label": "Button Border Color", 
+		"default":"#000"
+      },
+ 	 {
+        "type": "color",
+        "id": "button_text_clr",
+        "label": "Button Text Color",
+		"default":"#fff"
+      },
+	{
+            "type": "header",
+            "content": "Column 3 Image"            
+            },
+           {
+            "type": "image_picker",
+            "id": "image2",
+            "label": "Image"
+            },  
+          {
+              "type": "select",
+              "id": "layout2",
+              "label":"Image alignment",
+              "default": "left",
+              "options": [
+              { "value": "left","label":"Left"},
+              { "value": "right","label":"Right"}
+              ]
+          },
+			{
+            "type": "header",
+            "content": "Column 4 Text"            
+            },
+      {
+        "type": "textarea",
+        "id": "title2",
+        "label": "Heading",
+        "default": "SS New Arrival",
+		"info":"Use <strong>text here</strong> to make it bold"
+      },
+      {
+        "type": "richtext",
+        "id": "text2",
+        "label": "Text",
+        "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post.</p>"
+		
+      },
+      {
+        "type": "text",
+        "id": "button_label2",
+        "label": "Button label",
+		"default": "Shop Now"
+      },
+      {
+        "type": "url",
+        "id": "button_link2",
+        "label": "Button link",
+		"default": "/"
+      },
+ 	  {
+            "type": "select",
+            "id": "text_align2",
+            "label": "Text Align",
+            "default": "tl",
+            "options": [
+              {
+                "value": "tl",
+                "label": "Left"
+              },
+              {
+                "value": "tc",
+                "label": "Center"
+              },
+              {
+                "value": "tr",
+                "label": "Right"
+              }
+            ]
+      },
+	 {
+        "type": "header",
+        "content": "Appearance"
+      },
+      {
+        "type": "color",
+        "id": "text_clr2",
+        "label": "Text Color",
+        "default": "#000"
+      },
+	 {
+        "type": "color",
+        "id": "text_bg_clr2",
+        "label": "Background Color",
+        "default": "#eee"
+      },
+	  {
+        "type": "color",
+        "id": "button_bg_clr2",
+        "label": "Button Background Color",
+		"default":"#000"
+      },
+	  {
+        "type": "color",
+        "id": "button_bdr_clr2",
+        "label": "Button Border Color", 
+		"default":"#000"
+      },
+ 	 {
+        "type": "color",
+        "id": "button_text_clr2",
+        "label": "Button Text Color",
+		"default":"#fff"
+      }
+      ]
+     }
+   ],
+    "presets": [
+      {
+        "name": "4 - Image & Text (4 Columns)",       
+		"blocks": [
+          {
+            "type": "image_with_text"
+          }		  
+        ]
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,241 @@
+<div class="content-indent {{ section.settings.top-offeset}}">
+{% if section.settings.section_cov %}<div class="section-cover" style="background-color:{{section.settings.sec_bg_clr}};">{% endif%}	
+<div class="{% unless section.settings.section_width %} page-width{% else %} fullwidth-{{section.id}}{% endunless %}"> 
+  {%- if section.settings.title != blank  or section.settings.subtitle != blank -%}
+  <div class="sec-ttl {{ settings.title_align}} wow fadeIn">
+    <h3 class="h3">{{ section.settings.title }}</h3>     
+    {%- if section.settings.subtitle != blank -%}<span>{{section.settings.subtitle}}</span>{%- endif -%}
+  </div>
+  {% endif %}  
+  <div id="faq" class="{% if section.settings.enable_acc %}accor{% else %}no-accor{% endif %}{% if section.settings.enable_narrow %} narrow m_auto{% endif %}">     
+    {% for block in section.blocks limit: section.blocks.size%}     
+
+    {% if block.type == 'faqsection' %}                   
+    {% if block.settings.sectiontitle != blank %}
+    <h3>{{block.settings.sectiontitle}}</h3>
+    {% endif %}         
+    {% endif %}    
+
+    {% if block.type == 'faqs' %} 
+    <div class="faq-body">
+      <h4 class="p_ttl {{section.settings.acc_style}} m0">{{ block.settings.question}} </h4>
+      <div id="{{ block.id }}" class="p_con">
+        {{ block.settings.answer}}
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% if section.settings.section_cov %}</div> {% endif %}
+</div>
+<style>
+  .p_ttl{ color:{{section.settings.questions}}; border-bottom:1px solid {{section.settings.borders}}; }
+  .p_con{color:{{section.settings.answers}};}
+  .p_ttl:before {color:{{section.settings.icons}}; }
+  
+  .fullwidth-{{section.id}} { padding-left:{{ section.settings.pad-mbl}}px; padding-right:{{ section.settings.pad-mbl}}px; }
+  @media only screen and (min-width: 768px){
+    .fullwidth-{{section.id}} { padding-left:{{ section.settings.pad-desk}}px; padding-right:{{ section.settings.pad-desk}}px; }
+  }
+  
+</style>
+
+{% schema %}
+  {
+    "name": "FAQ",
+    "settings": [
+	 {
+        "type": "textarea",
+        "id": "title",
+        "label": "Heading",
+        "default": "Heading",
+		"info":"Use <strong>text here</strong> to make headings bold"
+      },
+ 	  {
+        "type": "textarea",
+        "id": "subtitle",
+        "label": "Sub Heading",
+        "default": "Describe your products, collection, content etc..."
+      },
+	 {
+		 "type": "paragraph",
+		 "content":"Section==="
+      },
+	 {
+            "type": "select",
+            "id": "top-offeset",
+            "label": "Top OffSet",
+            "default": "default",
+            "options": [
+              {
+                "value": "default",
+                "label": "Default"
+              },
+              {
+                "value": "small",
+                "label": "Small"
+              },
+			  {
+                "value": "none",
+                "label": "None"
+              }
+			]
+        },
+		 {
+		"type":"checkbox",
+		"id":"section_width",
+		"label":"Fullwidth?",
+		"default": false
+	  },
+	 {
+        "type": "paragraph",
+        "content": "Left/Right Padding for Fullwidth ==="
+      }, 	
+      {
+        "type": "range",
+        "id": "pad-desk",
+        "label": "Desktop",
+        "default": 55,
+        "min": 0,
+        "max": 100,
+        "step": 1
+      },    
+      {
+        "type": "range",
+        "id": "pad-mbl",
+        "label": "Mobile",
+        "default": 15,
+        "min": 0,
+        "max": 15,
+        "step": 1
+      },
+	 {
+        "type": "checkbox",
+        "id": "section_cov",
+     	"label": "Add Background?",
+        "default": false
+      },
+	  {
+        "type": "color",
+        "id": "sec_bg_clr",
+        "label": "Background",
+		"default":"#fafafa",	
+		"info":"select light color"
+	  },
+ 	 {	
+        "type": "checkbox",
+        "id": "enable_acc",
+        "label": "Enable Accordion?",
+        "default": false
+      },
+		{
+            "type": "select",
+            "id": "acc_style",
+            "label": "Accordion icons",
+            "default": "icons_1",
+            "options": [
+              {
+                "value": "icons_1",
+                "label": "Plus/Minus"
+              },
+              {
+                "value": "icons_2",
+                "label": "Up/Down Arrows"
+              }
+            ]
+       },	
+       {	
+        "type": "checkbox",
+        "id": "enable_narrow",
+        "label": "Narrow width?",
+        "default": false
+      },
+	  {
+        "type": "color",
+        "id": "sec-title-bg",
+        "label": "Section Title Background",
+        "default": "#333"
+      },
+      {
+        "type": "color",
+        "id": "sec-title",
+        "label": "Section Title",
+        "default": "#eee"
+      },
+ 		{
+        "type": "color",
+        "id": "questions",
+        "label": "Questions",
+        "default": "#444"
+      },
+	 {
+        "type": "color",
+        "id": "answers",
+        "label": "Answers",
+        "default": "#444"
+      },
+		{
+        "type": "color",
+        "id": "icons",
+        "label": "Icons",
+        "default": "#333"
+      },
+	 {
+        "type": "color",
+        "id": "borders",
+        "label": "Borders",
+        "default": "#eee"
+      }
+	],
+   "blocks":[
+     {
+        "type": "faqsection",
+        "name": "Section Title",
+		"settings": [
+          {
+            "type": "text",
+            "id": "sectiontitle",
+            "label": "Section Title"
+          }
+		]
+      },
+	  {
+	    "type":"faqs",
+		"name":"FAQs",
+		"settings":[			
+			{
+			"type":"text",
+			"id":"question",
+			"label":"Question",
+			"default":"Is Optimal compatible with Shopify Online Store 2.0?"
+			},
+			{
+			"type":"textarea",
+			"id":"answer",
+			"label":"Answer",
+			"default":"Yes, our theme is fully compatible and supports Sections on every page."		
+			}
+		 ]
+      }
+	],
+   "presets": [
+      {
+        "name": "5 - FAQs",            
+        "blocks": [
+          {
+            "type": "faqs"
+          },
+          {
+            "type": "faqs"
+          }          	  
+        ]
+      }
+    ]
+ }
+{% endschema %} 
+
+<style>
+  #faq h3 {	background:{{section.settings.sec-title-bg}}; color:{{section.settings.sec-title}}; }
+
+</style>

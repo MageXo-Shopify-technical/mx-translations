@@ -1,0 +1,54 @@
+{%- liquid
+  assign boxstyle = section.settings.prbox_style | default: settings.prbox_style
+
+  if section.settings.prbox_style != blank
+    assign secondImg = section.settings.secondary_image
+    assign vendorName = section.settings.show_vendor
+    assign actionBtn = section.settings.prlist_btn_show
+    assign actionBtnmb = section.settings.btn_mobiles
+    assign prReview = settings.show_product_review
+    assign colorSwatch = section.settings.show_color_swatch
+  else
+    assign secondImg = settings.secondary_image
+    assign vendorName = settings.show_vendor
+    assign actionBtn = settings.prlist_btn_show
+    assign actionBtnmb = settings.btn_mobiles
+    assign prReview = settings.show_product_review
+    assign colorSwatch = settings.show_color_swatch
+  endif
+
+  assign product_box = forloop.index | minus: 1
+  assign delay_time = 50 | times: product_box
+  assign quickUrl = product.url | split: '?' | first
+
+  if boxstyle == 'grid_1' or boxstyle == 'grid_2' or boxstyle == 'grid_3'
+    assign lblposition = 'top'
+  elsif boxstyle == 'grid_4'
+    assign lblposition = 'right'
+  elsif boxstyle == 'grid_5'
+    assign lblposition = 'left'
+  endif
+-%}
+
+<div
+  class='grid_bx grid_bx--collection {{ boxstyle }}{% unless product.available %} sold-out{% endunless %} wow fadeIn'
+  data-wow-delay='{{ delay_time }}ms'
+  style='background-color:{{section.settings.sec_bg_clr}};'
+>
+  {% if boxstyle == 'grid_2' %}<a class='overly' href='{{ collection.url }}'></a>{% endif %}
+  <div class='grid_img_wr'>
+    <a class='grid_lnk' href='{{ collection.url }}'>
+      <div
+        class='grid_img lazyload'
+        data-bgset='{% render 'prgrid-img', image: collection.image, sizes: sizes %}'
+        data-sizes='auto'
+        data-parent-fit='contain'
+      ></div>
+
+      <div class='details'>
+        <span class='details__button'>{{ collection.title }}</span>
+      </div>
+    </a>
+    <i class='at at-spinner4 at-spin'></i>
+  </div>
+</div>

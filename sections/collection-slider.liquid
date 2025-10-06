@@ -1,0 +1,251 @@
+{{ 'collection-slider.min.css' | asset_url | stylesheet_tag }}
+
+<div class='collection-slider collection-slider--{{ section.id }} content-indent {{ section.settings.top-offeset}}'>
+  <div
+    class='{% if section.settings.section_width %}fullwidth{% else %}page-width{% endif %}'
+    id='{{ section.id }}'
+    data-section-id='{{ section.id }}'
+    data-section-type='carousel'
+  >
+    {%- if section.settings.title != blank or section.settings.subtitle != blank -%}
+      <div class='sec-ttl {{ settings.title_align}} wow fadeIn'>
+        <h3 class='h3'>{{ section.settings.title }}</h3>
+        {%- if section.settings.subtitle != blank -%}
+          <span>{{ section.settings.subtitle }}</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- case section.settings.grid -%}
+      {%- when 2 -%}
+        {%- assign grid_ds = 'large-up--one-half' -%}
+        {%- assign image_size = '150,350,550,750,950' -%}
+      {%- when 3 -%}
+        {%- assign grid_ds = 'large-up--one-third' -%}
+        {%- assign image_size = '150,350,550,750' -%}
+      {%- when 4 -%}
+        {%- assign grid_ds = 'large-up--one-quarter' -%}
+        {%- assign image_size = '150,350,550,750' -%}
+      {%- when 5 -%}
+        {%- assign grid_ds = 'large-up--one-fifth' -%}
+        {%- assign image_size = '150,350,550' -%}
+      {%- when 6 -%}
+        {%- assign grid_ds = 'large-up--one-sixth' -%}
+        {%- assign image_size = '130,300,500' -%}
+      {%- when 7 -%}
+        {%- assign grid_ds = 'large-up--one-seventh' -%}
+        {%- assign image_size = '130,280,400' -%}
+    {%- endcase -%}
+    {% case section.settings['tablet-grid'] %}
+      {% when 2 %}
+        {%- assign grid_tb = 'medium--one-half' -%}
+      {% when 3 %}
+        {%- assign grid_tb = 'medium--one-third' -%}
+      {% when 4 %}
+        {%- assign grid_tb = 'medium--one-quarter' -%}
+      {% when 5 %}
+        {%- assign grid_tb = 'medium--one-fifth' -%}
+    {% endcase %}
+    {% case section.settings['mobile-grid'] %}
+      {% when 1 %}
+        {%- assign grid_mb = 'small--one-whole' -%}
+      {% when 2 %}
+        {%- assign grid_mb = 'small--one-half' -%}
+      {% when 3 %}
+        {%- assign grid_mb = 'small--one-third' -%}
+    {% endcase %}
+
+    {% if section.settings.collection_list != blank %}
+      <div
+        id='cl_slider-{{ section.id }}'
+        class='grid grid-products grid-products--collection carousel arwOut'
+        data-slick='{"slidesToShow": {{ section.settings.grid }},"slidesToScroll": 1, "autoplay":{{ section.settings.autoplay }}, "autoplaySpeed":{{section.settings.autoplay_speed | times: 1000}}, {%- if settings.rtl -%}"rtl": true,{%- endif -%} "infinite": true, "dots": true, "responsive":[{"breakpoint": 1024,"settings":{"slidesToShow": {{ section.settings.tablet-grid }} }},{"breakpoint": 767,"settings":{"slidesToShow":{{ section.settings.mobile-grid }} }} ]}'
+      >
+        {% for collection in section.settings.collection_list %}
+          <div class='grid__item item {{grid_mb}} {{grid_tb}} {{grid_ds}}'>
+            {% render 'collection-card-grid', collection: collection, sizes: image_size %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class='tc'><ls-static-22394>Please select a collection to display</ls-static-22394></p>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collection Slider",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "section_width",
+      "label": "Fullwidth?",
+      "default": false
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Heading",
+      "default": "Our Collection",
+      "info": "Use <strong>text here</strong> to make headings bold"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Sub Heading",
+      "default": "Describe your products, collection etc..."
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Collections",
+      "limit": 8
+    },
+    {
+      "type": "header",
+      "content": "Appearance Section ==="
+    },
+    {
+      "type": "select",
+      "id": "top-offeset",
+      "label": "Top OffSet",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "sec_bg_clr",
+      "label": "Background",
+      "default": "#fafafa",
+      "info": "select light color"
+    },
+    {
+      "type": "header",
+      "content": "Appearance Grid ==="
+    },
+    {
+      "type": "select",
+      "id": "prbox_style",
+      "label": "Grid Style",
+      "default": "grid_1",
+      "info": "[preview grid style](https:\/\/optimal-demos.myshopify.com\/pages\/grid-style)",
+      "options": [
+        {
+          "value": "grid_1",
+          "label": "Style 1 - Default Info Center"
+        },
+        {
+          "value": "grid_2",
+          "label": "Style 2 - Info Hover Image"
+        },
+        {
+          "value": "grid_3",
+          "label": "Style 3 - Info Below Image"
+        },
+        {
+          "value": "grid_4",
+          "label": "Style 4 - Default Info Left"
+        },
+        {
+          "value": "grid_5",
+          "label": "Style 5 - Top Right Icons"
+        },
+        {
+          "value": "grid_6",
+          "label": "Style 6 - Top Right Wishlist"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "vr_bg_position",
+      "label": "Variant Image Position",
+      "default": "50% 0",
+      "options": [
+        {
+          "value": "50% 0",
+          "label": "Center Top"
+        },
+        {
+          "value": "50% 50%",
+          "label": "Center Center"
+        }
+      ]
+    },
+
+    {
+      "type": "paragraph",
+      "content": "Collection Per Row ==="
+    },
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Desktop",
+      "default": 4,
+      "min": 2,
+      "max": 7,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "tablet-grid",
+      "label": "Tablet",
+      "default": 3,
+      "min": 1,
+      "max": 5,
+      "step": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile-grid",
+      "label": "Mobile",
+      "default": 2,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "type": "text",
+      "id": "rows",
+      "label": "Number of Collection to show",
+      "default": "5"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate Products",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Change Collection Every",
+      "default": 5,
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "Sec"
+    }
+  ],
+  "presets": [
+    {
+      "name": "1 - Collection Slider"
+    }
+  ]
+}
+{% endschema %}

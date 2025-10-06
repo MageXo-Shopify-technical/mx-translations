@@ -1,0 +1,32 @@
+{%- assign all_my_products = collections['all'].products %}
+{% paginate collections['all'].products by '1000' %}
+    {% for tmp_product in collections['all'].products %}
+    	{% if tmp_product.handle == slproduct %}
+        	{%- assign product = tmp_product -%}
+            {% break %}
+		{% endif %}
+    {% endfor %}
+{% endpaginate %}
+<div class="lb_shop fl {{postion}}{% unless product.available %} sold-out{% endunless %}">
+  <div class="lb_img">
+    <a href="{{ product.url | within: collection }}">
+      {% comment ls-rpl %}{%- assign img_url = product.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: product.featured_image, img_url: '1x1' -%}{%- endcapture -%}{%- assign img_url = LS_IMG_URL | replace: '_1x1.', '_{width}x.' -%}{% comment /ls-rpl %}{% endcomment %}
+      <img class="lazyload" src="{% comment ls-rpl %}{{ product.featured_image | img_url: '50x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: product.featured_image, img_url: '50x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" data-src="{{ img_url }}"
+     		data-widths="[120, 200, 250]" data-aspectratio="{{ product.featured_image.image.aspect_ratio }}" data-sizes="auto" alt="{% comment ls-rpl %}{{ product.featured_image.alt | escape }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: product.featured_image -%}{%- endcapture -%}{{ LS_ALT | escape }}{% comment /ls-rpl %}{% endcomment %}" />
+    </a>     	
+  </div>
+
+  <div class="details ml15">
+    {% if settings.show_vendor %}<div class="grid_vendor hide">{{ product.vendor }}</div>{% endif %}
+    <a href="{{ product.url | within: collection }}" class="grid_title">{{ product.title }}</a>
+    {% unless settings.catalogmode %}
+      <div class="grid_meta">{% include 'product-price' %}</div>
+      {% assign variantCount = product.variants | size %}
+      {% if variantCount > 1 %}
+          <a class="btn mt5 btn--small btn-options" href="{{ product.url | within: collection }}">{{ 'products.product.select_options' | t}}</a>                  	
+      {% else %}
+          <a class="btn mt5 btn--small add-to-cart" href="javascript:void(0);" id="{{ product.variants.first.id }}" rel="1">{{ 'products.product.add_to_cart' | t}}</a>
+      {% endif %}
+    {% endunless %}
+  </div>
+</div>

@@ -1,0 +1,272 @@
+{{ 'product-verification.min.css' | asset_url | stylesheet_tag }}
+
+<product-verification class="verification verification--{{ section.id }} wow fadeIn">
+  <div
+    id="verification-intro"
+    class="verification__intro"
+    style="background-color: {{ section.settings.background_intro_color }};"
+  >
+    <div class="page-width">
+      <div class="verification__wrapper">
+        <div class="verification__badge verification__badge--left">
+          {% if section.settings.verify_badge_left != blank %}
+            {{
+              section.settings.verify_badge_left
+              | image_url: width: 1200
+              | image_tag: loading: 'lazy', class: 'verification__image'
+            }}
+          {% endif %}
+        </div>
+
+        <div class="verification__form">
+          {% if section.settings.heading != blank %}
+            <h4 class="verification__title" style="color: {{ section.settings.heading_color }};">
+              {{ section.settings.heading | escape }}
+            </h4>
+          {% endif %}
+          {% if section.settings.subheading != blank %}
+            <div class="verification__subtitle" style="color: {{ section.settings.text_color }};">
+              {{ section.settings.subheading }}
+            </div>
+          {% endif %}
+
+          <form class="verification__form-block">
+            <input
+              type="text"
+              name="serial"
+              placeholder="Enter the serial number"
+              class="verification__input"
+              required
+            >
+            <button type="submit" class="verification__button">
+              <span>{{ section.settings.button_label | default: 'Verify' }}</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="verification__badge verification__badge--right">
+          {% if section.settings.verify_badge_right != blank %}
+            {{
+              section.settings.verify_badge_right
+              | image_url: width: 1200
+              | image_tag: loading: 'lazy', class: 'verification__image'
+            }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="verification__loader" hidden>
+    <span class="loader"></span>
+  </div>
+
+  <div class="verification__result is-hidden" style="background-color: {{ section.settings.background_result_color }};">
+    <div class="page-width">
+      <div class="verification__wrapper is-loading">
+        <div class="verification__badge verification__badge--left">
+          {% if section.settings.verify_result_badge_left != blank %}
+            {{
+              section.settings.verify_result_badge_left
+              | image_url: width: 1200
+              | image_tag: loading: 'lazy', class: 'verification__image'
+            }}
+          {% endif %}
+        </div>
+
+        <h4 class="verification__result-title" style="color: {{ section.settings.heading_color }};"></h4>
+        <div class="verification__result-body">
+          <div class="verification__image-wrapper">
+            <div class="verification__result-image">
+              <div class="skeleton skeleton--image">
+                <img class="verification__main-img" src="" alt="">
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="verification__details"
+            data-label-serial="{{ 'general.verification.serial' | t }}"
+            data-label-about="{{ 'general.verification.about' | t }}"
+            data-label-autograph="{{ 'general.verification.autograph' | t }}"
+            data-label-date="{{ 'general.verification.date' | t }}"
+            style="color: {{ section.settings.text_color }};"
+          >
+            <p>
+              <strong>{{ 'general.verification.serial' | t }}:</strong>
+              <span class="skeleton skeleton--text" data-key="serial"></span>
+            </p>
+            <p>
+              <strong>{{ 'general.verification.about' | t }}:</strong>
+              <span class="skeleton skeleton--text" data-key="about"></span>
+            </p>
+            <p>
+              <strong>{{ 'general.verification.autograph' | t }}:</strong>
+              <span class="skeleton skeleton--text" data-key="autograph"></span>
+            </p>
+            <p>
+              <strong>{{ 'general.verification.date' | t }}:</strong>
+              <span class="skeleton skeleton--text" data-key="date"></span>
+            </p>
+            <div class="verification__gallery" data-gallery></div>
+          </div>
+        </div>
+
+        <div class="verification__badge verification__badge--right">
+          {% if section.settings.verify_result_badge_right != blank %}
+            {{
+              section.settings.verify_result_badge_right
+              | image_url: width: 1200
+              | image_tag: loading: 'lazy', class: 'verification__image'
+            }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="verification-errors">
+    {
+      "empty": {{ 'general.verification.error.empty' | t | json }},
+      "format": {{ 'general.verification.error.format' | t | json }},
+      "not_found": {{ 'general.verification.error.not_found' | t | json }}
+    }
+  </script>
+</product-verification>
+
+<script src="{{ 'product-verification.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Product Verification",
+  "tag": "section",
+  "class": "section section--page-verification",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Intro settings"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "OWN A PIECE OF HISTORY"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Verify"
+    },
+    {
+      "type": "image_picker",
+      "id": "verify_badge_left",
+      "label": "Verify badge left"
+    },
+    {
+      "type": "image_picker",
+      "id": "verify_badge_right",
+      "label": "Verify badge right"
+    },
+    {
+      "type": "header",
+      "content": "Result settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "verify_result_badge_left",
+      "label": "Verify badge left"
+    },
+    {
+      "type": "image_picker",
+      "id": "verify_result_badge_right",
+      "label": "Verify badge right"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_intro_color",
+      "label": "Background intro color",
+      "default": "#ffd100"
+    },
+    {
+      "type": "color",
+      "id": "background_result_color",
+      "label": "Background result color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Verification"
+    }
+  ]
+}
+{% endschema %}
+
+{% comment %}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('serial-input');
+      const button = document.getElementById('verify-btn');
+      const resultContainer = document.getElementById('verification-result');
+
+      let data = [];
+
+      fetch('/pages/verify?view=serial-db')
+        .then((res) => {
+          if (!res.ok) throw new Error('Failed to load verification data');
+          return res.json();
+        })
+        .then((json) => {
+          data = json;
+        })
+        .catch((err) => {
+          console.error('Fetch error:', err);
+        });
+
+      button.addEventListener('click', () => {
+        const serial = input.value.trim().toLowerCase();
+        const found = data.find((item) => item.serial.toLowerCase() === serial);
+
+        if (found) {
+          resultContainer.innerHTML = `
+            <div class="verification-card">
+              <h2>${found.title}</h2>
+              <img src="${found.image}" alt="${found.title}" />
+              <p><strong>Product:</strong> ${found.product_title}</p>
+              <p><strong>Autograph:</strong> ${found.autograph}</p>
+              <p><strong>Date:</strong> ${found.date}</p>
+              <p>${found.about}</p>
+              <div class="gallery">
+                ${found.gallery.map((img) => `<img src="${img}" alt="Gallery image" />`).join('')}
+              </div>
+            </div>
+          `;
+        } else {
+          resultContainer.innerHTML = `<p class="text-red">❌ Serial number not found</p>`;
+        }
+      });
+    });
+  </script>
+{% endcomment %}

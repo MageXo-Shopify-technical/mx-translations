@@ -1,0 +1,291 @@
+{% include 'breadcrumb' %} 
+
+<article class="page-width">
+  <div class="grid">
+  <div class="grid__item blog_detail{% if section.settings.sidebar_position == 'left' %} right{% endif %}{% if section.settings.sidebar_position != 'nosidebar' %} medium-up--three-quarters large-up--three-quarters{% else %} fullwidth {% endif %}">   
+  <div class="blog_listview">      
+    <h1 class="mb10 h3">{{ article.title }}</h1>
+    <ul class="fl clr_light mb30">
+
+      {% if section.settings.blog_show_date %}
+      <li class="mr10"> {% capture date %}
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>
+        {% endcapture %}
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>
+      </li>
+      {% endif %}
+
+      {% if section.settings.blog_show_author %}
+      <li class="mr10"> <span> {{ 'blogs.article.by_author' | t }} <span class="clr_body">{{article.author}}</span></span></li>
+      {% endif %}
+
+      <li class="mr10">
+        <ul class="article_comment">
+          {% if blog.comments_enabled? and article.comments_count > 0 %}
+          <li><i class="at at-comments-l" aria-hidden="true"></i> <a href="{{ article.url }}#comments"> {{ 'blogs.comments.comments_with_count' | t: count: article.comments_count }}</a></li>
+          {% endif %}
+        </ul>
+      </li>
+    </ul>
+    
+    {% if article.image %}<div class="article_image mb20"> {% comment ls-rpl %}{{ article | img_url: 'master' | img_tag: article.title }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: article, img_url: 'master' -%}{%- endcapture -%}{{ LS_IMG_URL | img_tag: article.title }}{% comment /ls-rpl %}{% endcomment %}</div>{% endif %}   
+    <div class="rte">{{ article.content }}</div>
+
+    {% if article.tags.size > 0 %}                              
+    <ul class="article_tags fl mb20">
+      <span> {{ 'blogs.article.posted_in' | t }}  </span>                                  
+      <li>
+        {% for tag in article.tags %}
+        <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{% comment ls-rpl %}{{ tag }}{% endcomment %}{%- capture LS_TAG -%}{%- render "ls-tag", tag: tag, resource: article -%}{%- endcapture -%}{{ LS_TAG }}{% comment /ls-rpl %}{% endcomment %}</a>{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      </li>
+    </ul>                                
+    {% endif %}
+
+    {% if section.settings.show_share_buttons or blog.next_article or blog.previous_article %}
+    	<hr>
+    	<div class="fl f-wrap f-jcsb">
+          	{% if section.settings.show_share_buttons %}
+    			{% render 'social-sharing', share_title: article.title, share_permalink: article.url, share_image: article.image, clname:'' %}
+          	{% endif %}
+          	<!-- Blog navigation --> 
+            {% if blog.next_article or blog.previous_article %}
+            <div class="blog-nav mb20 fl f-jcc small--one-whole{% unless section.settings.show_share_buttons %} fl1{% endunless %}">
+                {% if blog.previous_article %}<a href="{{blog.previous_article}}"><i class="at at-long-arrow-alt-left" aria-hidden="true"></i> {{ 'blogs.article.previous' | t }} </a>{% endif %}
+              	<span class="m_auto"> &nbsp; &nbsp; </span>
+                {% if blog.next_article %}<a href="{{blog.next_article}}">{{ 'blogs.article.next' | t}} <i class="at at-long-arrow-alt-right" aria-hidden="true"></i></a>{% endif %}
+            </div>
+            {% endif %}
+    	</div>
+    {% endif %} 
+
+    <!-- Article comments --> 
+    {%- assign number_of_comments = article.comments_count -%}
+
+    {% if comment and comment.created_at %}
+    {%- assign number_of_comments = article.comments_count | plus: 1 -%}
+    {% endif %} 
+    {% if blog.comments_enabled? %}
+    {% if number_of_comments > 0 %}
+    <h2 class="sub-title">{{ 'blogs.comments.comments_with_count' | t: count: number_of_comments }}</h2>
+    {% paginate article.comments by 5 %}
+
+    {% comment %}#comments is required, it is used as an anchor link by Shopify.{% endcomment %}
+    <div id="comments"> {% if comment and comment.created_at %}
+      <p class="note form-success"> {% if blog.moderated? %}
+        {{ 'blogs.comments.success_moderated' | t }}
+        {% else %}
+        {{ 'blogs.comments.success' | t }}
+        {% endif %} </p>
+      {% endif %}
+      <ul class="comments">
+        {% comment %}
+        If a comment was just submitted with no blank field, show it.
+        {% endcomment %}
+        {% if comment and comment.created_at %}
+        <li id="{{ comment.id }}" class="comment"> {% include 'comment' %} </li>
+        {% endif %}
+
+        {% for comment in article.comments %}
+        <li id="{{ comment.id }}" class="comment"> {% include 'comment' %} </li>
+        {% endfor %}
+      </ul>
+      {% if paginate.pages > 1 %}
+      {% include 'pagination' %}
+      {% endif %} </div>
+    {% endpaginate %}
+
+
+    {% endif %}
+    <div class="comment-form form-vertical"> {% form 'new_comment', article %}
+      <h2 class="h3">{{ 'blogs.comments.title' | t }}</h2>
+      {{ form.errors | default_errors }}
+      <div class="grid">
+        <div class="grid__item medium-up--one-half">
+          <label for="CommentAuthor">{{ 'blogs.comments.name' | t }}</label>
+          <input type="text" name="comment[author]" id="CommentAuthor" class="input-full{% if form.errors contains 'author' %} input--error{% endif %}" value="{{ form.author }}">
+        </div>
+        <div class="grid__item medium-up--one-half">
+          <label for="CommentEmail">{{ 'blogs.comments.email' | t }}</label>
+          <input type="email" name="comment[email]" id="CommentEmail" class="input-full{% if form.errors contains 'email' %} input--error{% endif %}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+        </div>
+        <div class="grid__item">
+          <label for="CommentBody">{{ 'blogs.comments.message' | t }}</label>
+          <textarea name="comment[body]" id="CommentBody" class="input-full{% if form.errors contains 'body' %} input--error{% endif %}">{{ form.body }}</textarea>
+        </div>
+      </div>
+      {% if blog.moderated? %}
+      <p class="fine-print">{{ 'blogs.comments.moderated' | t }}</p>
+      {% endif %}
+      <input type="submit" class="btn" value="{{ 'blogs.comments.post' | t }}">
+      {% endform %} </div>
+    {% endif %} 
+
+    <!-- article end --> 
+
+  </div>
+    <div class="tc mt15"><a href="{{ blog.url }}" class="btn"><i class="at at-long-arrow-alt-left" aria-hidden="true"></i> {{ 'blogs.article.back_to_blog' | t: title: blog.title }}</a></div>
+</div>
+
+<!-- sidebar --> 
+{% unless section.settings.sidebar_position == 'nosidebar' %}
+<div class="grid__item medium-up--one-quarter large-up--one-quarter sidebar">{% include 'blog-sidebar' %}</div>
+
+{% endunless %}  
+  </div>
+</article>
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "articleBody": "{{ article.content | strip_html | escape }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ shop.url }}{{ page.url }}"
+  },
+  "headline": "{{ article.title }}",
+  {% if article.excerpt != blank %}
+    "description": "{{ article.excerpt | strip_html }}",
+  {% endif %}
+  {% if article.image %}
+    {% assign image_size = article.image.width | append: 'x' %}
+    "image": [
+      "https:{% comment ls-rpl %}{{ article | img_url: image_size }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: article, img_url: image_size -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}"
+    ],
+  {% endif %}
+  "datePublished": "{{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+  "dateCreated": "{{ article.created_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ article.author }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    {% if settings.share_image %}
+      {% comment ls-rpl %}{% assign image_size = article | img_url: 'master' | append: 'x' %}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: article, img_url: 'master' -%}{%- endcapture -%}{% assign image_size = LS_IMG_URL | append: 'x' %}{% comment /ls-rpl %}{% endcomment %}
+      "logo": {
+        "@type": "ImageObject",
+        "height": "{{ settings.share_image.height }}",
+        "url": "https:{% comment ls-rpl %}{{ settings.share_image | img_url: image_size }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.share_image, img_url: image_size -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}",
+        "width": "{{ settings.share_image.width }}"
+      },
+    {% endif %}
+    "name": "{{ shop.name }}"
+  }
+}
+</script>
+{% schema %}
+  {
+    "name": "Posts",
+    "settings": [
+ 	  {
+        "type": "select",
+        "id": "sidebar_position",
+        "label": "Sidebar Position",
+        "default": "left",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          },
+		  {
+            "value": "nosidebar",
+            "label": "No Sidebar"
+          }
+        ]
+      },	  
+      {
+        "type": "checkbox",
+        "id": "blog_show_author",
+        "label": "Show Author",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_date",
+        "label": "Show Date",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_share_buttons",
+        "label": "Show Social Sharing Buttons",
+        "default": true
+      },
+	 {
+        "type": "header",
+        "content": "Sidebar"
+       },
+     {
+        "type": "checkbox",
+        "id": "show_category",
+        "label": "Show Category",
+        "default": true
+      },
+     {
+        "type": "text",
+        "id": "category_box_title",
+        "label": "Category Title",
+        "default": "Category"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_recent_posts",
+        "label": "Show Recent Posts",
+        "default": true
+      },
+     {
+        "type": "text",
+        "id": "recent_posts_title",
+        "label": "Recent Posts Title",
+        "default": "Recent Posts"
+      },
+     {
+        "type": "checkbox",
+        "id": "show_banner_ad",
+        "label": "Show Banner",
+        "default": false
+      },
+	 {
+        "type": "image_picker",
+        "id": "sidebar_banner",
+        "label": "Upload Banner"       
+      },
+     {
+        "type": "text",
+        "id": "banner_link",
+        "label": "Banner Url"       
+      },
+	  {
+        "type": "checkbox",
+        "id": "show_products",
+        "label": "Show Collection",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "collection_title",
+        "label": "Collection Title",
+        "default": "Trending Now"
+      },
+      {
+        "type": "collection",
+        "id": "sidebar_collection",
+        "label": "Select Collection"        
+      },
+ 	 {
+        "type": "text",
+        "id": "number_of_prodcut",
+        "label": "Number of Product to Show",
+        "default": "4"
+      }
+    ]
+  }
+{% endschema %} 

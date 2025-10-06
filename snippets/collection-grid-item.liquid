@@ -1,0 +1,45 @@
+{%  assign collection_image = block.settings.image | default:collection.image %}
+{%- assign aspectratio = block.settings.image.aspect_ratio | default:collection.image.aspect_ratio -%}
+{% comment ls-rpl %}{%- assign img_url = collection_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: collection_image, img_url: '1x1' -%}{%- endcapture -%}{%- assign img_url = LS_IMG_URL | replace: '_1x1.', '_{width}x.' -%}{% comment /ls-rpl %}{% endcomment %}
+
+<div class="cl_item{% if section.settings.enable_zoom %} zoom_hov{% endif%}">      	   
+	<a href="{{ block.settings.url | default:collection.url }}" class="cl_item_link">            
+      <div class="img pr of_hidden">
+         {%- if collection_image != blank -%}
+        	<img class="img_fl lazyload" src="{% comment ls-rpl %}{{ collection_image | img_url: '60x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: collection_image, img_url: '60x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" width="160" height="160" data-src="{{ img_url }}" data-widths="[160,300,420,560,770,940,1200,1500]" data-aspectratio="{{ collection_image.aspect_ratio }}" data-sizes="auto" alt="{% comment ls-rpl %}{{ collection_image.alt | escape }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: collection_image -%}{%- endcapture -%}{{ LS_ALT | escape }}{% comment /ls-rpl %}{% endcomment %}" />               
+         {% else %} 
+        	{% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}{{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}    
+         {% endif %}
+      </div>      
+     	{% if masonary %} <div class="fl cl_txt_pos {{ block.settings.text_pos}} {{ block.settings.text_posm}}"> {% endif %}
+          {%  if block.settings.title != blank or  block.settings.detail != blank or block.settings.collection_btn != blank %} 
+            <div class="details bdr_rd{{block.settings.bdr_rad}} wd-{{ block.settings.box-width}} {{block.settings.text-align}} {{block.settings.box-pad}}{% if section.settings.tlleft %} lside{% endif %}">     	       
+              {% if block.settings.title != blank %}<div class="cl_item_ttl m0 {{font_size}}">{{ block.settings.title }}</div>{% endif %}
+              {% if block.settings.detail != blank %}<p class="txt mt10 mb0{% if block.settings.detail_hide %} small--hide{% endif %}">{{ block.settings.detail }}</p>{% endif %}
+              {% if section.settings.product_count %}<span class="counts">{{ 'collections.general.items_with_count' | t: count: collection.all_products_count }}</span>{% endif %}                        
+
+              {% if  block.settings.collection_btn != blank %}         	
+                {% if block.settings.collection_btn_link %}
+                    <button class="btn--link{% if block.settings.hide_btn %} small--hide{% endif %}" type="button">{{block.settings.collection_btn}}</button>
+                {% else %}
+                    <button class="btn {{section.settings.btn-size}} {{section.settings.btn-style}} mt15{% if block.settings.hide_btn %} small--hide{% endif %}" type="button">{{block.settings.collection_btn}}</button>
+                {% endif %}
+              {% endif %}                  
+            </div>
+          {% endif %}
+        {% if masonary %}</div> {% endif %}
+  </a>
+</div>
+<style>   
+  .item-{{block.id}} .wd-{{ block.settings.box-width}}{ width:{{ block.settings.box-width}}%;}
+  .item-{{block.id}} .details { background-color:{{block.settings.box_bg}}; color:{{block.settings.box_txt}}; }
+  .item-{{block.id}} .cl_item_ttl { font-size:{{ block.settings.ttl_font }}px; line-height:1{% if block.settings.ttl_font_l != 1 %}.{{ block.settings.ttl_font_l }}{% endif %} }
+  .item-{{block.id}} .txt { font-size:{{ block.settings.detail_font }}px; line-height:1{% if block.settings.detail_font_l != 1 %}.{{ block.settings.detail_font_l }}{% endif %} }
+  .item-{{block.id}} .btn--link { border-bottom:2px solid {{block.settings.box_txt}}; color:{{block.settings.box_txt}};}
+  .item-{{block.id}} .btn--link:hover { color:{{block.settings.box_txt}};}  
+   @media only screen and (max-width: 900px) {
+    .item-{{block.id}} .cl_item_ttl{ font-size:{{ block.settings.ttl_font_m }}px; }
+    .item-{{block.id}} .txt { font-size:{{ block.settings.detail_font_m }}px; }
+   }
+  .cl_box .details.lside { align-items:start;}
+</style>

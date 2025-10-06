@@ -1,0 +1,74 @@
+{% if section.settings.show_category %}
+  {% if blog.all_tags.size > 0 %}
+    <div class="sb_widget">
+     <div class="widget_ttl">
+        {{ section.settings.category_box_title }}
+      </div>
+      <div class="widget_con">  
+        <ul class="blog-category">
+          {% for tag in blog.all_tags %}
+          {% if current_tags contains tag %}
+          <li>{% comment ls-rpl %}{{ tag }}{% endcomment %}{%- capture LS_TAG -%}{%- render "ls-tag", tag: tag, resource: blog -%}{%- endcapture -%}{{ LS_TAG }}{% comment /ls-rpl %}{% endcomment %}</li>
+          {% else %}
+          <li>{% comment ls-rpl %}{{ tag | link_to_tag: tag }}{% endcomment %}{%- capture LS_TAG -%}{%- render "ls-tag", tag: tag, resource: blog -%}{%- endcapture -%}{{ LS_TAG | link_to_tag: tag }}{% comment /ls-rpl %}{% endcomment %}</li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endif %}
+{% endif %} 
+
+{% if section.settings.show_recent_posts %}
+<div class="sb_widget">
+ <div class="widget_ttl">
+    {{ section.settings.recent_posts_title }}
+  </div>
+  <div class="widget_con"> 
+    <ul class="blog_posts">
+      {% for article in blogs[blog.handle].articles limit:5 %}
+      <li class="post clearfix"> <a href="{{ article.url }}" class="post_img"> {% comment ls-rpl %}{{ article | img_url: '70x70',crop:'top'  | img_tag: article.title }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: article, img_url: '70x70',crop:'top' -%}{%- endcapture -%}{{ LS_IMG_URL | img_tag: article.title }}{% comment /ls-rpl %}{% endcomment %} </a>
+        <div class="article-detail"> <a href="{{ article.url }}" class="post_name">{{ article.title }}</a> <span class="post_date"> {{ article.published_at | time_tag: format: 'month_day_year' }} </span> </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %} 
+
+{% if section.settings.show_banner_ad %}
+{% if section.settings.sidebar_banner == blank %}
+<p><ls-static-716889>Please upload banner from store admin blog pages</ls-static-716889></p>
+{% else %}		
+<p class="mb25"> 
+  {% if section.settings.banner_link != blank %}
+  <a href="{{ section.settings.banner_link }}"> 
+    {% endif %}
+    <img src="{% comment ls-rpl %}{{ section.settings.sidebar_banner |  img_url:'master' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: section.settings.sidebar_banner, img_url:'master' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" alt="" /> 
+    {% if section.settings.banner_link != blank %}
+  </a>
+  {% endif %}
+</p>
+{% endif %} 
+{% endif %} 
+
+{% if section.settings.show_products %}
+<div class="sb_widget">
+  <div class="widget_ttl">
+    {{ section.settings.collection_title }}
+  </div>
+  <div class="widget_con"> 
+    {% if section.settings.sidebar_collection != blank %}   
+      <div class="grid">
+        {% for product in collections[section.settings.sidebar_collection].products limit:section.settings.number_of_prodcut %}
+         <div class="grid__item">{% include 'product-card-grid-columns', grid_image_width: image_size %}</div>         
+        {% endfor %}
+      </div>			    
+    {% else %}
+    <p><ls-static-237195>Please select collection from store admin blog pages</ls-static-237195></p>
+    {% endif %} 
+  </div>
+</div>
+{% endif %} 
+
+

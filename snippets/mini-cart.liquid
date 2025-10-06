@@ -1,0 +1,59 @@
+<div id="{% if settings.cartopt == 'popup' %}cartPopup{% else %}cartDrawer{% endif %}" class="block block-cart{% if settings.cartopt == 'popup' %} mfp-hide mfp-with-anim{% else %} fl f-col h_100{% endif %}" data-cart-view="data-cart-view">
+  	<h4 class="fl f-jcsb" {% if settings.cartopt == 'popup' %}rv-show="cart.item_count | gt 0"{% endif %}><span>{{ 'cart.general.title' | t }} (<span data-cart-render="item_count">{{ cart.item_count }}</span>)</span>{% if settings.cartopt == 'side' %}<a href="javascript:void(0);" class="close-cart continueCart"><i class="at at-times-r " aria-hidden="true"></i></a>{% endif %}</h4>
+  	<div id="cartEmpty" rv-show="cart.item_count | lt 1" class="tc"><i class="at at-sq-bag"></i> {{ 'cart.general.empty' | t }}</div>
+  	{% if settings.cartopt == 'popup' %}<div class="cartDetails fl f-col f-row-md" rv-show="cart.item_count | gt 0">{% endif %}
+        <ul class="mini_pr_list{% if settings.cartopt == 'popup' %} fl1{% endif %}">
+            <li class="fl f-aic" rv-each-item="cart.items">
+                <a class="pr_image" rv-href="item.url"><img class="img_fl" rv-src="item.image | productImageSize 'small'" width="100" height="100" rv-alt="item.title" /></a>
+                <div class="pr_details tl fl1">
+                    <a class="pr_name" rv-href="item.url" rv-text="item.product_title"></a>
+                  	<div class="fl f-jcsb w_100">
+                      <div>
+                        <div class="pr_vr" rv-text="item.variant_title"></div>
+                        <div class="pr_vr" rv-text="item.selling_plan_allocation.selling_plan.name"></div>
+                        <ul rv-hide="item.propertyArray | empty">
+                            <li rv-each-property="item.propertyArray < properties"><small class="text-muted"><ls-static-503361>{property.name}: {property.value}</ls-static-503361></small></li>
+                        </ul>
+                        <div class="pr_price_rw"><span class="product-price" rv-html="item.price | money | replace: ',00', '' "></span></div>
+                      </div>
+                      <div class="tc">
+                        <div class="qtyField sm mb5" title="{{ 'products.product.quantity' | t }}">
+                          <a class="qtyBtn" href="#" rv-data-cart-update="index | plus 1" rv-data-cart-quantity="item.quantity | minus 1">-</a>
+                          <span class="qtyBtn" rv-text="item.quantity"></span>
+                          <a class="qtyBtn" href="#" rv-data-cart-update="index | plus 1" rv-data-cart-quantity="item.quantity | plus 1">+</a>
+                        </div>
+	                  	<a href="#" class="remove ttu tdu small" rv-data-cart-remove="index | plus 1" title="{{ 'cart.general.remove' | t }}">{{ 'cart.general.remove' | t }}</a>
+                      </div>
+                  	</div>
+                </div>
+            </li>           
+	      </ul>
+      	  <ul class="cart_btns{% if settings.cartopt == 'popup' %} fl1{% endif %}"  rv-show="cart.item_count | gt 0">
+            {%- if settings.free_ship_minicart and settings.free_ship != blank and settings.free_ship_msg != blank -%}
+          		<li class="shipinfo">
+                    {%- assign shipProd = all_products[settings.free_ship] -%}
+                    <p id="freeShipMsg" class="freeShipMsg" data-price="{{shipProd.price}}"><i class="at at-truck"></i> {{settings.free_ship_msg | replace: '$','<b class="freeShip"></b>' }}</p>
+                    <p id="freeShipclaim" class="freeShipMsg freeShipclaim"><i class="at at-truck"></i> {{settings.got_free_ship }}</p>
+                </li>
+            {%- endif -%}
+            <li class="cart_total fl m0"> <span>{{ 'cart.general.total' | t }}:</span> <span class="product-price" rv-html="cart.total_price | money | replace: ',00', '' currency.currentCurrency"></span> </li>
+            <li class="btns_set" rv-show="cart.item_count | gt 0">
+               {% if settings.direct_checkout %}
+               {%- if settings.terms_checkbox -%}
+                    <div class="cart_term ttu">                       
+                        <label for="cartDWtearm">
+                          <input type="checkbox" name="tearm" id="cartDWtearm" class="checkbox custCheck" value="tearm" required />
+                          <span class="checkbox"></span> {{ settings.terms_text }}
+                      	</label>
+                    </div>
+                {%- endif -%}          	
+                <form action="{{ routes.cart_url }}" method="post" novalidate>
+                    <input type="submit" name="checkout" id="cartDWcheckout" class="btn {{settings.btn-style1}} {{settings.btn-size1}} {{ settings.btn-text}} cartDWcheckout mb10" value="{{ 'cart.general.checkout' | t }}" {% if settings.terms_checkbox %}disabled="disabled"{% endif %} />
+                </form>
+                {%- endif -%}
+               {% if settings.viewcart %}<a id="inlinecheckout-cart" href="{{ routes.cart_url }}" class="btn tc {{settings.btn-style}} {{settings.btn-size}} {{ settings.btn-text}}">{{ 'cart.general.view_cart' | t }}</a>{% endif %}
+               {% if settings.cntshop %}<a href="javascript:void(0);" class="btn {{settings.btn-style}} {{settings.btn-size}} {{ settings.btn-text}} continueCart">{{ 'cart.general.continue_shopping' | t}}</a>{% endif %}
+            </li>
+        </ul>
+  	{% if settings.cartopt == 'popup' %}</div>{% endif %}
+</div>

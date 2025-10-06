@@ -1,0 +1,156 @@
+<div class="cookies-wrapper">
+    <div id="cookie-bar" class="cookies bg-white box-shadow w100">
+        <div class="cb-button cb-button-accept cb-button-dismiss" data-accept="selected"></div>
+        <div class="content">
+            <div class="prel fix-height">
+                <div class="cookies-accept dflex prel zi5">
+                    <div class="cookies-accept-content prel">
+                        <p class="cookies-accept-headline"><strong><ls-static-353625>Our store uses cookies</ls-static-353625></strong></p>
+                        <p class="cookies-accept-text">
+                            <ls-static-561687>Thanks to these invisible helpers, we can find out what you are interested in and what you are not interested in
+                             to offer you the best possible experience during your visit to the e-shop. Some cookies are necessary for
+                             operation of this site. For cookies placed by third-party services, we need yours
+                             agreement.&nbsp;</ls-static-561687>{{ 'Více o ochraně osobních údajů' | link_to: '/pages/ochrana-osobnich-udaju' }}
+                        </p>
+                    </div>
+                    <div class="cookies-accept-buttons dflex">
+                        <div class="cb-button cb-button-manage"><ls-static-500228>Upravit</ls-static-500228></div>
+                        <div class="cb-button cb-button-accept" data-accept="all">
+                            <ls-static-429681>Allow all</ls-static-429681></div>
+                    </div>
+                </div>
+
+                <div class="cookies-manage dflex pabs zi1">
+                    <p class="cookies-manage-headline w100"><strong><ls-static-956898>Cookies settings</ls-static-956898></strong></p>
+                    <div class="cookies-manage-checkboxes dflex">
+                        <div class="cookies-manage-checkbox prel">
+                            <input id="c_essential" type="checkbox" disabled checked>
+                            <label for="c_essential" class="dblock">
+                                <strong><ls-static-59345>Necessary cookies</ls-static-59345></strong>
+                                <br>
+                                <ls-static-294718>Necessary cookies are there to make the site usable by enabling basic
+                                 features such as page navigation and access to secure sections of the website. Without them it would
+                                 this website was not working properly.</ls-static-294718></label>
+                        </div>
+                        <div class="cookies-manage-checkbox prel">
+                            <input id="c_analytical" type="checkbox">
+                            <label for="c_analytical" class="dblock">
+                                <strong><ls-static-567155>Analytical and marketing cookies</ls-static-567155></strong>
+                                <br>
+                                <ls-static-283898>Analytical cookies help us understand which visitors come to us and what we do
+                                 they are looking for We use marketing cookies to track visitors and offer interesting offers
+                                 and relevant offers for individuals.</ls-static-283898></label>
+                        </div>
+                    </div>
+                    <div class="cookies-manage-buttons">
+                        <div class="cb-button cb-button-accept" data-accept="selected"><ls-static-431783>Uložit</ls-static-431783></div>
+                        <div class="cb-button cb-button-back"><ls-static-321456>Zpět</ls-static-321456></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    class CookieBar {
+        constructor() {
+            this.cookiesBar = document.getElementById('cookie-bar');
+        }
+
+        init() {
+            const shouldShowGDPRBanner = window.Shopify.customerPrivacy.shouldShowGDPRBanner()
+            console.log({ shouldShowGDPRBanner });
+
+            if (shouldShowGDPRBanner) {
+                document.addEventListener('trackingConsentAccepted', () => {
+                    this.startTracking()
+                });
+
+                this.showBanner();
+            }
+
+            if (window.Shopify.customerPrivacy.userCanBeTracked()) {
+                this.startTracking();
+            }
+
+            for (const button of document.querySelectorAll('.open-cookie-banner')) {
+                button.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    this.showBanner();
+                });
+            }
+        }
+
+        showBanner() {
+            if (!this.cookiesBar) {
+                return;
+            }
+            this.acceptCookies = this.cookiesBar.querySelector('.cookies-accept');
+            this.manageCookies = this.cookiesBar.querySelector('.cookies-manage');
+
+            this.cookiesBar.classList.add('show')
+            this.showMain()
+
+            for (const button of this.cookiesBar.querySelectorAll('.cb-button-accept')) {
+                button.addEventListener('click', (event) => this.allowCookies(event));
+            }
+
+            this.cookiesBar.querySelector('.cb-button-manage').addEventListener('click', () => this.showManage());
+            this.cookiesBar.querySelector('.cb-button-back').addEventListener('click', () => this.showMain());
+        }
+
+        showManage() {
+            this.acceptCookies.style.opacity = 0;
+            this.manageCookies.classList.add("displayed");
+            this.cookiesBar.querySelector(".fix-height").style.height = `${this.manageCookies.clientHeight}px`;
+
+            setTimeout(() => {
+                this.acceptCookies.style.display = 'none';
+            }, 405);
+        }
+
+        showMain() {
+            this.manageCookies.classList.remove("displayed");
+            this.acceptCookies.style.display = 'flex';
+            this.cookiesBar.querySelector(".fix-height").style.height = `${this.acceptCookies.clientHeight}px`;
+
+            setTimeout(() => {
+                this.acceptCookies.style.opacity = 1;
+            }, 405);
+        }
+
+        startTracking() {
+            // Shopify manages Facebook and Google themselves
+            // Manage your outher cookie users here
+        }
+
+        allowCookies(event) {
+            const accept = event.target.dataset.accept;
+            let trackingAllowed = true;
+            if (accept === 'selected') {
+                trackingAllowed = this.cookiesBar.querySelector('#c_analytical').checked;
+            }
+            console.log({ accept });
+            console.log({ trackingAllowed });
+            window.Shopify.customerPrivacy.setTrackingConsent(trackingAllowed, () => { });
+            this.cookiesBar.classList.remove('show');
+            this.cookiesBar.classList.add('hidden');
+        }
+    }
+
+    // window.Shopify.loadFeatures(
+    //     [
+    //         {
+    //             name: 'consent-tracking-api',
+    //             version: '0.1',
+    //         },
+    //     ],
+    //     error => {
+    //         if (error) {
+    //             throw error; // if you want to raise
+    //         }
+    //         const cookieBar = new CookieBar();
+    //         cookieBar.init();
+    //     },
+    // );
+</script>

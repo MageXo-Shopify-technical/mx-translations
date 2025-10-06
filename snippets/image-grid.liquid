@@ -1,0 +1,18 @@
+{%- if link != blank -%}<a href="{{link}}">{%- endif -%}
+{%- if image != blank -%}
+{% comment ls-rpl %}{%- assign img_url1 = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '1x1' -%}{%- endcapture -%}{%- assign img_url1 = LS_IMG_URL | replace: '_1x1.', '_{width}x.' -%}{% comment /ls-rpl %}{% endcomment %}
+<img class="img_fl lazyload" src="{% comment ls-rpl %}{{ image | img_url: "50x" }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: "50x" -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" width="100" height="100"
+     data-src="{{ img_url1 }}" data-widths="[200, 400, 600, 800, 1000, 1200, 1400]" data-sizes="auto" alt="{% comment ls-rpl %}{{ block.settings.image1.alt | escape }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: block.settings.image1 -%}{%- endcapture -%}{{ LS_ALT | escape }}{% comment /ls-rpl %}{% endcomment %}">
+{%- else -%}
+{{ 'https://dummyimage.com/' | append: imgSize | append: '/F4F4F4/ccc' | img_tag }}
+{%- endif -%}
+{%- if text1 != blank or text2 != blank or text3 != blank %}
+<div class="fl grid_btxtwrap {{pos}} {% if text_a %}tl{% else %}tc{% endif %}">
+<div class="dib pr grid_btxt {{txt_size}} of_hidden">
+  {%- if text1 != blank -%}<span class="text1 db {% if hidetxt1 %}small--hide{% endif %}">{{text1}}</span>{%- endif -%}
+  {%- if text2 != blank -%}<span class="text2 db {% if hidetxt2 %}small--hide{% endif %}">{{text2}}</span>{%- endif -%}
+  {%- if text3 != blank -%}<span class="text3 db {% if hidetxt3 %}small--hide{% endif %}">{{text3}}</span>{%- endif -%}
+</div>
+</div>
+{%- endif -%}
+{%- if link != blank -%}</a>{%- endif -%}

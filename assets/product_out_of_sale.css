@@ -1,0 +1,12 @@
+.product-single, .pr_photoes, .pr_thumbs {
+  max-height: 30vh;
+}
+
+.pr_thumbs .slick-list {
+  max-height: 30vh;
+}
+
+.slick-slide img {
+  height: 30vh;
+  width: auto;
+}

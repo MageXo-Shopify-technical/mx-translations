@@ -1,0 +1,26 @@
+{%- if image != blank -%}
+	{%- if sizes == blank -%}{% assign sizes = '375,540,780,1080,1296,1512,2000,2450,3000,3600' %}{%- endif -%}
+	{%- assign imgsizes = sizes | split: ',' -%}
+	{%- for size in imgsizes -%}
+		{%- assign width = size | append: 'x' -%}
+		{%- assign lsize = size | plus: 0 -%}
+		{%- if image.width >= lsize -%}{% comment ls-rpl %}{{ image | img_url: width }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: width -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} {{size}}w {{ size | divided_by: image.aspect_ratio | round }}h,{%- endif -%}
+	{%- endfor -%}
+	{% comment ls-rpl %}{{ image | img_url: 'master' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: 'master' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} {{ image.width }}w {{ image.height }}h
+{%- endif -%}
+{% comment %}
+{%- if image != blank -%}
+{%- if image.width > 375 -%}{% comment ls-rpl %}{{ image | img_url: '375x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '375x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 375w {{ 375 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 540 -%}{% comment ls-rpl %}{{ image | img_url: '540x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '540x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 540w {{ 540 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 720 -%}{% comment ls-rpl %}{{ image | img_url: '720x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '720x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 720w {{ 720 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 1080 -%}{% comment ls-rpl %}{{ image | img_url: '1080x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '1080x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1080w {{ 1080 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 1296 -%}{% comment ls-rpl %}{{ image | img_url: '1296x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '1296x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1296w {{ 1296 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 1512 -%}{% comment ls-rpl %}{{ image | img_url: '1512x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '1512x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 1512w {{ 1512 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 2000 -%}{% comment ls-rpl %}{{ image | img_url: '2000x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '2000x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 2000w {{ 2000 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 2450 -%}{% comment ls-rpl %}{{ image | img_url: '2450x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '2450x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 2450w {{ 2450 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 3000 -%}{% comment ls-rpl %}{{ image | img_url: '3000x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '3000x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 3000w {{ 3000 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 3500 -%}{% comment ls-rpl %}{{ image | img_url: '3500x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '3500x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 3500w {{ 3500 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{%- if image.width > 4100 -%}{% comment ls-rpl %}{{ image | img_url: '4100x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: '4100x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 4100w {{ 4100 | divided_by: image.aspect_ratio | round }}h,{%-endif -%}
+{% comment ls-rpl %}{{ image | img_url: 'master' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: image, img_url: 'master' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} {{ image.width }}w {{ image.height }}h
+{%- endif -%}
+{% endcomment %}

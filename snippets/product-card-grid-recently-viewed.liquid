@@ -1,0 +1,180 @@
+{%- liquid
+  assign boxstyle = "grid_1"
+
+  if section.settings.prbox_style != blank
+    assign secondImg = section.settings.secondary_image
+    assign vendorName = section.settings.show_vendor
+    assign actionBtn = section.settings.prlist_btn_show
+    assign actionBtnmb = section.settings.btn_mobiles
+    assign prReview = settings.show_product_review
+    assign colorSwatch = section.settings.show_color_swatch
+  else
+    assign secondImg = settings.secondary_image
+    assign vendorName = settings.show_vendor
+    assign actionBtn = settings.prlist_btn_show
+    assign actionBtnmb = settings.btn_mobiles
+    assign prReview = settings.show_product_review
+    assign colorSwatch = settings.show_color_swatch
+  endif
+
+  assign product_box = forloop.index | minus: 1
+  assign delay_time = 50 | times: product_box
+  assign quickUrl = product.url | split: '?' | first
+
+  if boxstyle == 'grid_1' or boxstyle == 'grid_2' or boxstyle == 'grid_3'
+    assign lblposition = 'top'
+  elsif boxstyle == 'grid_4'
+    assign lblposition = 'right'
+  elsif boxstyle == 'grid_5'
+    assign lblposition = 'left'
+  endif
+-%}
+
+{% capture buttons %}
+  {%- unless actionBtn -%}
+    <div class="button-set{% if actionBtnmb %} small--hide{% endif %}">
+      {% if settings.enable_wishlist %}<a class="btn wishlist addto-wishlist" href="{{pages[settings.wishlist_page].url}}" rel="{{ product.handle | handleize }}"><i class="at at-heart-l"></i><span class="tooltip-label {{ lblposition }}">{{ 'products.wishlist.add_to_wishlist' | t}}</span></a>{% endif %}
+
+      {%- unless settings.catalog-mode or product.tags contains 'out_of_sale'-%}
+          {% if product.available %}
+                  {% assign variantCount = product.variants | size %}
+                  {% if variantCount > 1 %}
+                      {% if settings.enable_quickshop %}
+                      <a class="btn btn-options quickShop" href="{{ quickUrl }}?view=quickshop"><i class="at at-cart-l" aria-hidden="true"></i><span class="tooltip-label {{ lblposition }}">{{ 'products.product.quick_shop' | t}}</span></a>
+                      {% else %}
+                      <a class="btn btn-options" href="{{ product.url | within: collection }}"><i class="at at-cart-l" aria-hidden="true"></i><span class="tooltip-label {{ lblposition }}">{{ 'products.product.select_options' | t}}</span></a>
+                      {% endif %}
+                  {% else %}
+                    <a class="btn add-to-cart" href="javascript:void(0);" id="{{ product.variants.first.id }}" rel="1"><i class="at at-cart-l" aria-hidden="true"></i><span class="tooltip-label {{ lblposition }}">{{ 'products.product.add_to_cart' | t}}</span></a>
+                  {% endif %}
+            <form action="/cart/add" method="post" enctype="multipart/form-data" class="hide"><input type="hidden" name="id" value="{{ product.variants.first.id }}" /></form>
+          {% endif %}
+      {%- endunless -%}
+
+      {% if settings.quick_view %}<a href="{{ quickUrl }}?view=quick_view" rel="nofollow" class="btn quick-view"><i class="at at-search-l" aria-hidden="true"></i><span class="tooltip-label {{ lblposition }}">{{ 'products.product.quick_view' | t}}</span></a>{% endif %}
+    </div>
+  {%- endunless -%}
+{% endcapture %}
+
+{% capture productTimer %}
+  {%- if settings.display_countdown and product.metafields.my_fields.countdown != blank -%}
+    <div class="gridTimer atCounter fl f-col tc ttu" data-date="{{ product.metafields.my_fields.countdown }}">
+      <span><span class="tm days">00</span>{{'date_formats.short_names.days' | t}}</span>
+      <span><span class="tm hours">00</span>{{ 'date_formats.short_names.hours' | t }}</span>
+      <span><span class="tm minutes">00</span>{{'date_formats.short_names.minuts' | t}}</span>
+      <span><span class="tm seconds">00</span>{{'date_formats.short_names.seconds' | t}}</span>
+    </div>
+  {%- endif -%}
+{% endcapture %}
+
+<div class="grid_bx {{ boxstyle }}{% unless product.available %} sold-out{% endunless %} wow fadeIn" data-wow-delay="{{ delay_time }}ms">
+  {% if boxstyle == "grid_2" %}<a class="overly" href="{{ product.url | within: collection }}"></a>{% endif %}
+  <div class="grid_img_wr">
+    <a class="grid_lnk" href="{{ product.url | within: collection }}">
+      <div class="grid_img lazyload{% if secondImg and product.images.size > 1 %} primary{% endif %}" data-bgset="{% render 'prgrid-img', image: product.featured_image, sizes: sizes %}" data-sizes="auto" data-parent-fit="contain"></div>
+      {%- if secondImg and product.images.size > 1 and boxstyle != "style2" -%}
+        <div class="grid_img lazyload hover" data-bgset="{% render 'prgrid-img', image: product.images[1], sizes: sizes %}" data-sizes="auto" data-parent-fit="contain"></div>
+      {%- endif -%}
+      {%- if colorSwatch -%}<div class="grid_img hover variantImg"></div>{%- endif -%}
+    </a>
+	  <i class="at at-spinner4 at-spin"></i>
+    <!-- product label -->
+    {%- if settings.pr_lbl -%}
+    <div class="pr_lbl {{ settings.select_label_style }}">
+      {%- if settings.sale_lbl and product.compare_at_price > product.price and settings.sale_lbl -%}
+        {% if settings.sale_label_style == "salelabel" %}
+          <label class="lbl on-sale">{{ 'products.product.on_sale' | t}}</label>
+        {% else %}
+          <label class="lbl on-sale">-{{ product.compare_at_price_min | minus: product.price | times: 100 | divided_by: product.compare_at_price_min }}%</label>
+        {% endif %}
+      {%- endif -%}
+      {%- assign badges = product.metafields.custom.product_badges.value -%}
+      {%- if badges != blank -%}
+        {%- for badge in badges -%}
+          <label class="lbl" style="background-color: {{ badge.bg_color }}; color: {{ badge.text_color }}">{{ badge.label }}</label>
+        {%- endfor -%}
+      {%- endif -%}
+
+      {%- if product.tags contains settings.pr_label1 -%}<label class="lbl pr_lbl1" style=" background-color: {{ settings.pr_label1_cl }};" >{{settings.pr_label1}}</label>{%- endif -%}
+      {%- if product.tags contains settings.pr_label2 -%}<label class="lbl pr_lbl2" style=" background-color: {{ settings.pr_label2_cl }};">{{settings.pr_label2}}</label>{%- endif -%}
+      {%- if product.tags contains settings.pr_label3 -%}<label class="lbl pr_lbl3" style=" background-color: {{ settings.pr_label3_cl }};">{{settings.pr_label3}}</label>{%- endif -%}
+      {% if settings.soldout_lbl %}
+      {%- unless product.available -%}<label class="lbl sold-out"><span>{{ 'products.product.sold_out' | t}}</span></label>{%- endunless -%}
+      {%- endif -%}
+    </div>
+    {%- endif -%}
+
+    <!-- Wears label APC24-742 -->
+    <div class="pr_lbl_right">
+      <label class="lbl wears-label-image desktop--hide">
+        {%- if product.metafields.custom.wears_label_image  -%}
+          {{ product.metafields.custom.wears_label_image | image_url: width: 50 | image_tag }}
+        {%- endif  -%}
+      </label>
+
+      <label class="lbl wears-label-image mobile--hide">
+        {%- if product.metafields.custom.wears_label_image  -%}
+          {{ product.metafields.custom.wears_label_image | image_url: width: 100 | image_tag }}
+        {%- endif  -%}
+      </label>
+    </div>
+
+
+    <!-- countdown timer -->
+    {{ productTimer}}
+
+    <!-- product buttons -->
+    {% if boxstyle == "grid_1" or boxstyle == "grid_4" or boxstyle == "grid_5" %}{{buttons}}{% endif %}
+
+    {%- unless actionBtn -%}
+      {% if boxstyle == "grid_6" %}
+          <div class="grid6-top fl f-col pa{% if actionBtnmb %} small--hide{% endif %}">
+            {% if settings.enable_wishlist %}<a class="btn wishlist addto-wishlist" href="{{pages[settings.wishlist_page].url}}" rel="{{ product.handle | handleize }}"><i class="at at-heart-l"></i><span class="tooltip-label left">{{ 'products.wishlist.add_to_wishlist' | t}}</span></a>{% endif %}
+            {% if settings.quick_view %}<a href="{{quickUrl}}?view=quick_view" rel="nofollow" class="btn quick-view"><i class="at at-search-l" aria-hidden="true"></i><span class="tooltip-label left">{{ 'products.product.quick_view' | t}}</span></a>{% endif %}
+          </div>
+          <div class="grid6-bottom pa{% if actionBtnmb %} small--hide{% endif %}">
+             {%- unless settings.catalog-mode or product.tags contains 'out_of_sale'-%}
+                {% if product.available %}
+                        {% assign variantCount = product.variants | size %}
+                        {% if variantCount > 1 %}
+                            {% if settings.enable_quickshop %}
+                            <a class="btn btn-options quickShop" href="{{ quickUrl }}?view=quickshop">{{ 'products.product.quick_shop' | t}}</a>
+                            {% else %}
+                            <a class="btn btn-options" href="{{ product.url | within: collection }}">{{ 'products.product.select_options' | t}}</a>
+                            {% endif %}
+                        {% else %}
+                          <a class="btn add-to-cart" href="javascript:void(0);" id="{{ product.variants.first.id }}" rel="1">{{ 'products.product.add_to_cart' | t}}</a>
+                        {% endif %}
+                  <form action="/cart/add" method="post" enctype="multipart/form-data" class="hide"><input type="hidden" name="id" value="{{ product.variants.first.id }}" /></form>
+                {% endif %}
+            {%- endunless -%}
+           </div>
+       {% endif %}
+     {%- endunless -%}
+
+  </div>
+
+  {% if boxstyle == "grid_3" %}{% render 'color-swatches' with product: product %}{% endif %}
+
+  <div class="details">
+    {% if vendorName %}
+    	<div class="grid_vendor">{{ product.vendor }}</div>
+    {% endif %}
+    <div class="grid_title">
+      <a href="{{ product.url | within: collection }}">{{ product.title }}
+      {% if product.metafields.descriptors.subtitle != blank and settings.is_subttl %}
+		<span class="db">{{ product.metafields.descriptors.subtitle }}</span>
+	  {% endif %}
+      </a>
+    </div>
+    {%- unless settings.catalog-mode -%}
+    <div class="grid_meta">{% render 'product-price' with product: product %}</div>
+    {%- endunless -%}
+    {% if prReview %}<div class="pr_review">{% render 'ratings' with product: product %}</div>{% endif %}
+    {% if boxstyle != "grid_3" %}{% render 'color-swatches' with product: product %}{% endif %}
+    {% if boxstyle == "grid_2" or boxstyle == "grid_3" %}{{buttons}}{% endif %}
+  </div>
+
+  <!-- quick shop -->
+  {% if settings.enable_quickshop %}<div class="quick_shop fl" id="ProductSection-{{product.id}}"></div>{% endif %}
+</div>

@@ -1,0 +1,35 @@
+<ul class="fl social-icons">
+   {%- if settings.social_facebook_link != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_facebook_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Facebook' }}" target="_blank"><i class="at at-facebook" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-97190>Facebook</ls-static-97190></span> </a> </li>
+	{%- endif -%}
+  	{%- if settings.social_twitter_link != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_twitter_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Twitter' }}" target="_blank"><i class="at at-twitter" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-552877>Twitter</ls-static-552877></span> </a> </li>
+	{%- endif -%}	
+	{%- if settings.social_pinterest_link != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_pinterest_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Pinterest' }}" target="_blank"><i class="at at-pinterest-p" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-257159>Pinterest</ls-static-257159></span> </a> </li>
+	{%- endif -%}
+	{%- if settings.social_instagram_link != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_instagram_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Instagram' }}" target="_blank"><i class="at at-instagram" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-774284>Instagram</ls-static-774284></span> </a> </li>
+	{%- endif -%} 	
+	{%- if settings.social_tumblr_link != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_tumblr_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Tumblr' }}" target="_blank"><i class="at at-tumblr" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-325357>Tumblr</ls-static-325357></span> </a> </li>
+	{%- endif -%}
+	{%- if settings.social_snapchat_link != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_snapchat_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Snapchat' }}" target="_blank"><i class="at at-snapchat-ghost" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-552867>Snapchat</ls-static-552867></span> </a> </li>
+  	{%- endif -%}
+	{%- if settings.social_youtube_link != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_youtube_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'YouTube' }}" target="_blank"><i class="at at-youtube" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-813433>YouTube</ls-static-813433></span> </a> </li>
+	{%- endif -%}
+	{%- if settings.social_vimeo_link != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_vimeo_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Vimeo' }}" target="_blank"><i class="at at-vimeo" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-741978>Vimeo</ls-static-741978></span> </a> </li>
+	{%- endif -%}	
+  	{%- if settings.social_linkedin != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_linkedin | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Linkedin' }}" target="_blank"><i class="at at-linkedin" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-484580>Linkedin</ls-static-484580></span> </a> </li>
+	{%- endif -%}
+	{%- if settings.social_tiktok != blank -%}
+		<li><a class="social-icons__link" href="{{ settings.social_tiktok | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'TikTok' }}" target="_blank"><i class="at at-tiktok" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-924254>TikTok</ls-static-924254></span></a></li>
+	{%- endif -%}
+  	{%- if settings.watsapp != blank -%}
+		<li><a class="social-icons__link" href="https://api.whatsapp.com/send?phone={{ settings.watsapp }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Whatsapp' }}" target="_blank"><i class="at at-whatsapp" aria-hidden="true"></i><span{% unless hideLbl %} class="fallback_txt"{% endunless %}><ls-static-254222>Whatsapp</ls-static-254222></span></a></li>
+	{%- endif -%}
+</ul>

@@ -1,0 +1,652 @@
+{{ 'product_out_of_sale.css' | asset_url | stylesheet_tag }}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign product_thumb_size = '160x' -%}
+{%- assign product_image_zoom_size = '1800x1800' -%}
+{%- assign enable_zoom = settings.enable_zoom -%}
+
+{%- if settings.image-col == "sm" -%}
+	{%- assign product_image_width = 'medium-up--two-fifths' -%}
+	{%- assign product_description_width = 'medium-up--three-fifths' -%}
+	{%- assign product_image_zoom_size = '1200x1200' -%}
+	{%- assign product_image_size = '600x' -%}
+	{%- if settings.layout_style =="fullwidth" or settings.product_fullwidth -%}
+		{%- assign product_image_size = '800x' -%}
+	{%- endif -%}
+{%- elsif settings.image-col == "md" -%}
+	{%- assign product_image_width = 'medium-up--one-half' -%}
+	{%- assign product_description_width = 'medium-up--one-half' -%}
+	{%- assign product_image_size = '700x' -%}
+	{%- if settings.layout_style =="fullwidth" or settings.product_fullwidth -%}
+		{%- assign product_image_size = '1100x' -%}
+	{%- endif -%}
+{%- else -%}
+	{%- assign product_image_width = 'medium-up--two-quarters large-up--three-fifths' -%}
+	{%- assign product_description_width = 'medium-up--two-quarters large-up--two-fifths' -%}
+	{%- assign product_image_size = '900x' -%}
+	{%- if settings.layout_style =="fullwidth" or settings.product_fullwidth -%}
+		{%- assign product_image_size = '1100x' -%}
+	{%- endif -%}
+{%- endif -%}
+
+{%- assign product_thumbnail_width = 'small--one-third large-up--one-fifth' -%}
+{%- assign featured_img_src = current_variant.featured_image.src | default: product.featured_image.src -%}
+
+{%- if settings.breadcrumb_pr -%}{%- include 'breadcrumb' -%}{%- else -%}<div class="topSpace"></div>{%- endif -%}
+
+{% style %}
+.product-tabs li:first-child a.tablink {
+  color: #EC6262;
+}
+{% endstyle %}
+
+<div class="{{settings.product_latyout}} page-width{% if settings.product_fullwidth %} fullwidth{% endif %}" data-style="{{settings.product_latyout}}" id="ProductSection-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product" data-enable-history-state="true">
+	{% capture productImages %}
+		<div class="pr_lg_img" data-product-single-media-group>
+			{%- liquid
+              	assign slidetoshow = 1
+              	assign slidefade = true
+              	assign centermode = false
+              	assign slideloop = false
+
+          		if settings.product_latyout == "style2"
+                  	assign slidetoshow = 2
+                  	assign slidefade = false
+          		elsif settings.product_latyout == "style7"
+          			assign slidetoshow = 3
+                    assign slidefade = false
+                    assign centermode = true
+                    assign slideloop = true
+              	endif
+          	-%}
+			<div class="primgSlider" data-slick='{"slidesToShow":{{slidetoshow}},"slidesToScroll": 1, "centerMode": {{centermode}}, "centerPadding": 0, "infinite": {{slideloop}}, "fade": {{slidefade}},{% if settings.rtl %} "rtl": true,{% endif %}"asNavFor": ".pr_thumbs_{{ section.id }}", "responsive":[{"breakpoint": 767,"settings":{"slidesToShow": 1 }} ]}'>
+				{% for media in product.media %}
+					{%- assign imgNo = forloop.index0 -%}
+              		{% case media.media_type %}
+      					{% when 'image' %}
+                            <div id="{{media.id}}" class="pr_zoom_{{section.id}} pr_photo pswipe{% if enable_zoom %} zoomcr{% endif %}{% if settings.product_latyout == "style4" or settings.product_latyout == "style5" %} slick-active{% endif %}" {% if enable_zoom %}data-zoom="{% comment ls-rpl %}{{ media | img_url: product_image_zoom_size }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: product_image_zoom_size -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}"{% endif %} data-slide="{{imgNo}}">
+                                {% comment ls-rpl %}{%- assign primg_url = media | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: '1x1' -%}{%- endcapture -%}{%- assign primg_url = LS_IMG_URL | replace: '_1x1.', '_{width}x.' -%}{% comment /ls-rpl %}{% endcomment %}
+                                <span class="imgWrapper" style="max-width:{% if settings.pimg_maxHt != blank %}{{ settings.pimg_maxHt | times: media.aspect_ratio }}{% else %}{{media.width}}{% endif %}px;">
+                                	<img class="img_fl lazyload FeaturedImage-{{ section.id }} product-featured-img{% if enable_zoom %} js-zoom-enabled{% endif %}{% if forloop.first %} lazypreload{% endif %}" src="{% comment ls-rpl %}{{ media | img_url: "100x" }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: "100x" -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" width="100" height="100"
+                                    	data-src="{{ primg_url }}" data-widths="[350, 500, 670, 800, 1000, 1300]" data-aspectratio="{{ media.aspect_ratio }}" data-sizes="auto" alt="{% comment ls-rpl %}{{ media.alt | escape }}{% endcomment %}{%- capture LS_ALT -%}{%- render "ls-alt", image: media -%}{%- endcapture -%}{{ LS_ALT | escape }}{% comment /ls-rpl %}{% endcomment %}">
+                                </span>
+                            </div>
+              			{% when 'external_video' %}
+                          <div class="pr_photo product-single__media videoSlide" data-media-id="{{ media.id }}" data-slide="{{imgNo}}">
+                            <div class="vd-wrap">{{ media | external_video_tag }}</div>
+              			  </div>
+              			{% when 'video' %}
+                          <div class="pr_photo product-single__media videoSlide" data-media-id="{{ media.id }}" data-slide="{{imgNo}}">
+                            {% comment ls-rpl %}{%- assign videoThumb = media | img_url: '700x' -%}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: '700x' -%}{%- endcapture -%}{%- assign videoThumb = LS_IMG_URL -%}{% comment /ls-rpl %}{% endcomment %}
+                            {{ media | video_tag: poster: videoThumb, controls: true, muted: true, loop: true, playsinline: true, webkit-playsinline: true }}
+                          </div>
+              			{% when 'model' %}
+                            <div class="pr_photo product-single__media" id="FeaturedMedia-{{ section.id }}-{{ media.id }}-wrapper" data-product-media-type-model data-product-single-media-wrapper data-media-id="{{ section.id }}-{{ media.id }}">
+                              <div class="prMedia" style="padding-top:100%">{{ media | model_viewer_tag: image_size: product_image_size, reveal: 'interaction', toggleable: true, data-model-id: media.id }}</div>
+                            </div>
+                          {% else %}
+                            <div class="pr_photo product-single__media" style="padding-top: 100%;" data-media-id="{{ media.id }}">{{ media | media_tag }}</div>
+              		{% endcase %}
+				{% endfor %}
+			</div>
+
+          	{% assign first_3d_model = product.media | where: "media_type", "model" | first %}
+      		{%- if first_3d_model -%}
+              <button
+                aria-label="{{ 'products.product.view_in_space_label' | t }}"
+                class="btn w_100 product-single__view-in-space"
+                data-shopify-xr
+                data-shopify-model3d-id="{{ first_3d_model.id }}"
+                data-shopify-title="{{ product.title | escape }}"
+                data-shopify-xr-hidden
+              >
+                <span class='product-single__view-in-space-text'>{{ 'products.product.view_in_space' | t }}</span>
+              </button>
+            {%- endif -%}
+
+			<div class="product-btn">
+              {%- if settings.enable_wishlist -%}<a class="wishlist addto-wishlist" href="{{pages[settings.wishlist_page].url}}" rel="{{ product.handle | handleize }}"><i class="at at-heart-l"></i><span class="tooltip-label left"><span class="msg">{{ 'products.wishlist.add_to_wishlist' | t}}</span></span></a>{%- endif -%}
+				{%- if product.metafields.my_fields.video != blank -%}<a href="{{product.metafields.my_fields.video}}" class="popup-video pr"><i class="at at-play-cir" aria-hidden="true"></i> <span class="tooltip-label">{{ 'products.product.video' | t }}</span></a>{%- endif -%}
+			</div>
+			{% if settings.pr_lbl %}
+			<span class="pr_lbl {{ settings.select_label_style }}">
+				{%- if settings.sale_lbl and product.compare_at_price > product.price -%}<label class="lbl on-sale">{{ 'products.product.on_sale' | t}}</label>{%- endif -%}
+
+        {%- assign badges = product.metafields.custom.product_badges.value -%}
+        {%- if badges != blank -%}
+          {%- for badge in badges -%}
+            <label class="lbl" style="background-color: {{ badge.bg_color }}; color: {{ badge.text_color }}">{{ badge.label }}</label>
+          {%- endfor -%}
+        {%- endif -%}
+
+        {%- if product.tags contains settings.pr_label1 -%}<label class="lbl pr_lbl1" style=" background-color: {{ settings.pr_label1_cl }};" >{{settings.pr_label1}}</label>{%- endif -%}
+        {%- if product.tags contains settings.pr_label2 -%}<label class="lbl pr_lbl2" style=" background-color: {{ settings.pr_label2_cl }};">{{settings.pr_label2}}</label>{%- endif -%}
+        {%- if product.tags contains settings.pr_label3 -%}<label class="lbl pr_lbl3" style=" background-color: {{ settings.pr_label3_cl }};">{{settings.pr_label3}}</label>{%- endif -%}
+			</span>
+			{% endif %}
+		</div>
+
+    {% if product.media.size > 0 %}
+      {%- liquid
+                assign thumbcount = 5
+                if settings.product_latyout == "style2" and settings.thumbnail_pos != "bottom"
+                  assign thumbcount = 3
+                endif
+            -%}
+      <div class="thumbs_nav tc{% if  settings.product_latyout == "style4" or settings.product_latyout == "style5" or settings.product_latyout == "style7" %} hide{% endif %}{% if product.media.size == 1 %} hide{% endif %}">
+        <div class="pr_thumbs pr_thumbs_{{ section.id }}{% if product.media.size < thumbcount or product.media.size == thumbcount %} dSlider{% endif %}"
+                    data-slick='{"slidesToShow":{{thumbcount}},"slidesToScroll": 1,"infinite":false,{% if settings.thumbnail_pos != "bottom" %}"verticalSwiping": true, "vertical": true,{% endif %} "asNavFor": ".primgSlider", "focusOnSelect": true,{% if settings.rtl %} "rtl": true,{%- endif -%}
+                    "responsive":[{"breakpoint": 767,"settings":{"slidesToShow": 5,{% if settings.thumbnail_pos != "bottom" %}"vertical":false,"verticalSwiping": false,{% endif %}"swipe":true }} ]}'>
+          {% for media in product.media %}
+            {%- assign imgNo = forloop.index0 -%}
+                      {% capture thumbImgs %}{% comment ls-rpl %}{{ media | img_url: '100x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: '100x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 100w {{ 100 | divided_by: media.aspect_ratio | round }}h,{% comment ls-rpl %}{{ media | img_url: '200x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: '200x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %} 200w {{ 200 | divided_by: media.aspect_ratio | round }}h{% endcapture %}
+            <div class="pr_thumbs_item{% if media.media_type == 'video' or media.media_type == 'external_video' or media.media_type == 'model' %} video-thumb{% endif %}" data-slide="{{imgNo}}">
+              <a id="{{media.id}}" href="{% comment ls-rpl %}{{ media | img_url: '100x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: '100x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" class="db pr_thumb pr_thumb_{{ section.id }} lazyload{% if media.media_type == 'image' %} swipeImg{% endif %}{% if featured_img_src == media %} activeSlide{% endif %}" {% if settings.enable_lightbox %}data-image="{% comment ls-rpl %}{{ media | img_url: "master" }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: "master" -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" data-size="{{media.width}}x{{media.height}}"{% endif %}
+                                data-bgset="{% if media.media_type == 'image' %}{{thumbImgs}}{% else %}{% comment ls-rpl %}{{ media | img_url: '300x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: media, img_url: '300x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}{% endif %}" data-sizes="auto" data-parent-fit="contain">
+                                {% if media.media_type == 'video' or media.media_type == 'external_video'  %}<i class="at at-play"></i>{% endif %}
+                                {% if media.media_type == 'model' or media.media_type == 'external_video'  %}<i class="at at-cube"></i>{% endif %}
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+{% endcapture %}
+
+{% capture productDetails %}
+	<h1 class="pr_title mb10">{{ product.title }}</h1>
+
+	{% if section.settings.show_product_tabs %}
+		<div class="tbs_lst {{ settings.tab_postion}} {{settings.tab_style}} wow fadeIn">
+			{% if settings.tab_stl != "acctab" %}
+				<ul class="fl product-tabs {{settings.tab_style}}{% if settings.tab_align == "center" %} f-jcc{% endif %} small--hide">
+					{% for block in section.blocks %}
+						{%- if block.type == 'metafields' -%}
+							{%- if product.metafields.my_fields[block.settings.key] != blank -%}
+								<li><a class="tablink" href="#tab{{block.id}}">{{block.settings.title}}</a></li>
+							{%- endif -%}
+                  		{%- elsif block.type == 'sizechart' -%}
+                  			{% if sizechart %}<li><a class="tablink" href="#tab{{block.id}}">{{block.settings.title}}</a></li>{% endif %}
+						{%- else -%}
+							<li><a class="tablink" href="#tab{{block.id}}">{{block.settings.title}}</a></li>
+						{%- endif -%}
+					{% endfor %}
+				</ul>
+			{% endif %}
+			<div class="tbs_wrp{% unless section.settings.show_product_tabs %} noTabs{% endunless %}">
+				{% for block in section.blocks %}
+					{% capture blockTitle %}
+						{%- if section.settings.show_product_tabs -%}
+							<h3 class="acor-ttl{% if settings.tab_stl != "acctab" %} medium-up--hide{% endif %}"><a class="tablink" href="#tab{{block.id}}">{{block.settings.title}} <i class="at at-angle-down-r" aria-hidden="true"></i></a></h3>
+						{%- else -%}
+							<h3 class="h2">{{block.settings.title}}</h3>
+						{%- endif -%}
+					{% endcapture %}
+
+					{%- case block.type -%}
+						{% when 'descriptions' %}
+							{{blockTitle}}
+							<div id="tab{{block.id}}" class="tb_cnt {% if settings.tab_stl == "acctab" %}acrd{% endif %}"><div class="tb_pr_desc">{{ product.description }}</div></div>
+						{% when 'custom' %}
+							{{blockTitle}}
+							<div id="tab{{block.id}}" class="tb_cnt {% if settings.tab_stl == "acctab" %}acrd{% endif %} text-content">
+                {% if block.settings.content == blank %}
+                  {{ product.description }}
+                {% else %}
+                  {{block.settings.content}}
+                {% endif %}
+              </div>
+						{% when 'metafields' %}
+							{%- if product.metafields.my_fields[block.settings.key] != blank -%}
+								{{blockTitle}}
+								<div id="tab{{block.id}}" class="tb_cnt {% if settings.tab_stl == "acctab" %}acrd{% endif %}">{{product.metafields.my_fields[block.settings.key]}}</div>
+							{%- endif -%}
+					{%- endcase -%}
+				{% endfor %}
+			</div>
+		</div>
+	{% endif %}
+{% endcapture %}
+
+
+{% if settings.product_latyout != "style7" %}
+	<div class="grid product-single">
+		<div class="grid__item {{ product_image_width }} pr_photoes fl f-jcsb f-col{% if settings.thumbnail_pos != "bottom"%} f-row-md{% endif %}">{{productImages | strip_newlines | remove: "  " | remove: "	"}}</div>
+		<div class="grid__item {{ product_description_width }} pr_meta{% if settings.txt-center %} tc{% endif %}{% if settings.image-col == "lg" %} small_view{% endif %}">
+          <div class="wrap-product-info">
+          	{{productDetails}}
+			{% if settings.tab_postion == "below-addcart" %}{{productTabs}}{% endif %}
+          </div>
+		</div>
+	</div>
+{% else %}
+	<div class="product-single">
+		<div class="pr_photoes {{settings.thumbnail_pos}}">{{productImages | strip_newlines | remove: "  " | remove: "	"}}</div>
+		<div class="pr_meta tc">{{productDetails}}</div>
+	</div>
+    {% if settings.tab_postion == "below-addcart" %}{{productTabs | strip_newlines | remove:"	"}}{% endif %}
+{% endif %}
+
+</div>
+{%- unless product.empty? -%}
+	<script type="application/json" id="ProductJson-{{ section.id }}">{{ product | json }}</script>
+	<script type="application/json" id="ModelJson-{{ section.id }}">{{ product.media | where: 'media_type', 'model' | json }}</script>
+{%- endunless -%}
+
+
+{% comment %} product popup and script {% endcomment %}
+
+{% capture productPopup %}
+  <!-- product navigation -->
+  {% if settings.spr_navigation %}
+    {% if collection.previous_product or collection.next_product %}
+      {% if collection.previous_product %}
+      <a href="{{ collection.previous_product }}" class="pr_nav fl f-jcsb f-aic prev{% if settings.spr_navigation_mb %} small--hide medium--hide{% endif %}" title="{{ 'products.product.prev' | t }}">
+        <span class="details">{{ collection.previous_product.title | truncate: 30 }}<br /><span class="db mt10">{{ collection.previous_product.price |money }}</span></span>
+        <span class="img"><img class="img_fl" src="{% comment ls-rpl %}{{ collection.previous_product.images[0].src | img_url: '60x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: collection.previous_product.images[0].src, img_url: '60x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" width="60" height="60" class="db" alt="" /></span>
+      </a>
+      {% endif %}
+      {% if collection.next_product %}
+      <a href="{{ collection.next_product }}" class="pr_nav fl f-jcsb f-aic next{% if settings.spr_navigation_mb %} small--hide medium--hide{% endif %}" title="{{ 'products.product.next' | t }}">
+        <span class="img"><img class="img_fl" src="{% comment ls-rpl %}{{ collection.next_product.images[0].src | img_url: '60x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: collection.next_product.images[0].src, img_url: '60x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" width="60" height="60" class="db" alt="" /></span>
+        <span class="details">{{ collection.next_product.title | truncate: 30 }}<br /><span class="db mt10">{{ collection.next_product.price |money }}</span></span>
+      </a>
+      {% endif %}
+    {% endif %}
+  {% endif %}
+
+  {%- if settings.enable_lightbox -%}
+  <link rel="preload" as="style" href="{{ 'photoswipe.css' | asset_url }}" onload="this.rel='stylesheet'">
+  <!--script src="{{ 'photoswipe.min.js' | asset_url }}" defer="defer"></script-->
+  <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true"><div class="pswp__bg"></div><div class="pswp__scroll-wrap"><div class="pswp__container"><div class="pswp__item"></div><div class="pswp__item"></div><div class="pswp__item"></div></div><div class="pswp__ui pswp__ui--hidden"><div class="pswp__top-bar"><div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button><button class="pswp__button pswp__button--share" title="Share"></button><button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button><button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class="pswp__preloader"><div class="pswp__preloader__icn"><div class="pswp__preloader__cut"><div class="pswp__preloader__donut"></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class="pswp__share-tooltip"></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button><button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class="pswp__caption"><div class="pswp__caption__center"></div></div></div></div></div>
+  {%- endif -%}
+
+{% endcapture %}
+{{productPopup | strip_newlines | remove: "  " | remove: "	" }}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+<script type="text/javascript">
+	theme.productStrings = {
+    	addToCart: {{ 'products.product.add_to_cart' | t | json }},
+      	preOrder: {{ 'products.product.pre_order' | t | json }},
+    	soldOut: {{ 'products.product.sold_out' | t | json }},
+    	unavailable: {{ 'products.product.unavailable' | t | json }},
+      	prStyle: {{settings.product_latyout | json }}
+  	}
+
+window.addEventListener('DOMContentLoaded',function(){
+      $('.product-form-{{product.id}} .swatch :radio').change(function() {
+            var optionIndex = $(this).closest('.swatch').attr('data-option-index'),
+                optionValue = $(this).val();
+            $(this).closest('form').find('.single-option-selector').eq(optionIndex).val(optionValue).trigger('change');
+		});
+      	$('#variantOptions').change(function(){
+            var optionValue = $(this).val(),
+                form = $('form[action="/cart/add"]');
+            $(form).find('.pr_variants').val(optionValue).trigger('change');
+		});
+
+
+  	{%- if settings.terms_checkbox -%}
+      var $buyinoneclick = $('.shopify-payment-button');
+      if($buyinoneclick.length){
+        $buyinoneclick.first().bind('DOMNodeInserted', function() {
+          setTimeout(function(){
+            var $shopifypaymentbutton = $('.shopify-payment-button').find(".shopify-payment-button__button");
+            if($shopifypaymentbutton.length){
+              $buyinoneclick.hide();
+              setTimeout(function(){
+                $(".shopify-payment-button__button").attr('disabled', true);
+                $buyinoneclick.fadeIn()
+              }, 300);
+            }
+          }, 0);
+        });
+      }
+
+  	  {%- if settings.terms_checkbox -%}
+  		$('#prTearm').change(function(){
+          if(this.checked == true){
+            $('.shopify-payment-button__button').removeAttr("disabled");
+          } else {
+            $('.shopify-payment-button__button').attr("disabled", "disabled");
+          }
+        });
+  	  {%- endif -%}
+  	{%- endif -%}
+
+  	{%- if settings.enable_lightbox -%}
+  	  window.onload = function() {
+          var s = document.createElement('script');
+          s.type = 'text/javascript';
+          s.async = true;
+          s.src = '{{ 'photoswipe.min.js' | asset_url }}';
+          var x = document.getElementsByTagName('head')[0];
+          x.appendChild(s);
+      }
+      var $pswp = $('.pswp')[0],
+          image = [],
+          getItems = function(){
+              var items = [];
+              $('.swipeImg').each(function() {
+                  var $href = $(this).data('image'),
+                      $size = $(this).data('size').split('x'),
+                      item  = { src: $href, w: $size[0], h: $size[1] }
+                  items.push(item);
+              });
+              return items;
+          }
+      var items = getItems();
+
+      $('.pswipe').click(function(event) {
+          event.preventDefault();
+          var $index = $(".active-thumb").parent().attr('data-slick-index');
+          $index++;
+          $index = $index-1;
+
+          var options = { index: $index, bgOpacity: 0.9, showHideOpacity: true }
+          var lightBox = new PhotoSwipe($pswp, PhotoSwipeUI_Default, items, options);
+          lightBox.init();
+      });
+    {%- endif -%}
+
+    {%- if product.metafields.my_fields.video != blank -%}
+        $('.popup-video').magnificPopup({ type: 'iframe', mainClass: 'mfp-zoom-in', removalDelay: 160, preloader: false, fixedContentPos: false });
+    {%- endif -%}
+
+    //pickup avaibility
+    {% if settings.pickup_show %}
+      fetch('/variants/{{product.selected_or_first_available_variant.id}}/?section_id=pickup-availability').then(response => response.text()).then(text => {
+        const container = document.querySelector('[data-store-availability-container]');
+        const pickupAvailabilityHTML = new DOMParser().parseFromString(text, 'text/html').querySelector('.pickup-availability-container');
+        container.appendChild(pickupAvailabilityHTML);
+        pickupPopup();
+      })
+      .catch(e => {
+        console.error(e);
+      });
+      function pickupPopup() {
+            $('.mfp-link').magnificPopup({
+              delegate: '.mfp',
+              removalDelay: 300,
+              callbacks: {
+                beforeOpen: function() {
+                  $('.sticky_hdr').addClass('popup');
+                   this.st.mainClass = this.st.el.attr('data-effect');
+                },
+                close:function(){ $('.sticky_hdr').removeClass('popup'); }
+              },
+             midClick: true
+            });
+        }
+      {%- endif -%}
+
+  });
+
+  {% capture variantImg %}
+  	{%- if product.variants.size > 1 -%}
+      var variantImages={},thumbnails,variant,variantImage,optionValue,productOptions = [];
+        {%- for variant in product.variants -%}
+           variant = {{ variant.featured_image.src | json }};
+           if(typeof variant !== 'undefined' && variant !== null){
+             variantImage =  variant.split('?')[0].replace(/http(s)?:/,'');
+             variantImages[variantImage] = variantImages[variantImage] || {};
+             {%- for option in product.options -%}
+               {%- assign option_value = variant.options[forloop.index0] -%}
+               {%- assign option_key = 'option-' | append: forloop.index0 -%}
+               if(typeof variantImages[variantImage][{{ option_key | json }}] === 'undefined'){
+                 variantImages[variantImage][{{ option_key | json }}] = {{ option_value | json }};
+               } else {
+                 var oldValue = variantImages[variantImage][{{ option_key | json }}];
+                 if(oldValue !== null && oldValue !== {{ option_value | json }}){variantImages[variantImage][{{ option_key | json }}] = null;}
+               }
+             {%- endfor -%}
+           }
+           productOptions.push(variant);
+        {%- endfor -%}
+	{% else %}
+		var variantImages = "";
+    {%- endif -%}
+   {% endcapture %}
+   {{variantImg | strip_newlines | remove: "  " | remove: "	" }}
+
+	var Shopify = Shopify || {};
+	Shopify.optionsMap = {};
+	Shopify.updateOptionsInSelector = function(selectorIndex){
+      switch (selectorIndex){
+        case 0:
+          var key = 'root',
+          	  selector = $('.single-option-selector:eq(0)');
+          break;
+        case 1:
+          var key = $('.single-option-selector:eq(0)').val(),
+          	  selector = $('.single-option-selector:eq(1)');
+          break;
+        case 2:
+          var key = $('.single-option-selector:eq(0)').val();
+          key += ' / ' + $('.single-option-selector:eq(1)').val();
+          var selector = $('.single-option-selector:eq(2)');
+      }
+
+      var initialValue = selector.val();
+      //selector.empty();
+      var availableOptions = Shopify.optionsMap[key];
+      /*for (var i=0; i<availableOptions.length; i++){
+        var option = availableOptions[i];
+        var newOption = $('<option></option>').val(option).html(option);
+        selector.append(newOption);
+      }*/
+      $('.swatch[data-option-index="' + selectorIndex + '"] .swatch-element').each(function(){
+        if($.inArray($(this).attr('data-value'), availableOptions) !== -1){
+          $(this).removeClass('soldout');
+        } else {
+          $(this).addClass('soldout');
+        }
+      });
+      if($.inArray(initialValue, availableOptions) !== -1){
+        selector.val(initialValue);
+      }
+      selector.trigger('change');
+	};
+Shopify.linkOptionSelectors = function(product){
+  // Building our mapping object.
+  for (var i=0; i<product.variants.length; i++){
+    var variant = product.variants[i];
+    if(variant.available){
+      // Gathering values for the 1st drop-down.
+      Shopify.optionsMap['root'] = Shopify.optionsMap['root'] || [];
+      Shopify.optionsMap['root'].push(variant.option1);
+      Shopify.optionsMap['root'] = Shopify.uniq(Shopify.optionsMap['root']);
+      // Gathering values for the 2nd drop-down.
+      if(product.options.length > 1){
+        var key = variant.option1;
+        Shopify.optionsMap[key] = Shopify.optionsMap[key] || [];
+        Shopify.optionsMap[key].push(variant.option2);
+        Shopify.optionsMap[key] = Shopify.uniq(Shopify.optionsMap[key]);
+      }
+      // Gathering values for the 3rd drop-down.
+      if(product.options.length === 3){
+        var key = variant.option1 + ' / ' + variant.option2;
+        Shopify.optionsMap[key] = Shopify.optionsMap[key] || [];
+        Shopify.optionsMap[key].push(variant.option3);
+        Shopify.optionsMap[key] = Shopify.uniq(Shopify.optionsMap[key]);
+      }
+    }
+  }
+  // Update options right away.
+  Shopify.updateOptionsInSelector(0);
+  if(product.options.length > 1) Shopify.updateOptionsInSelector(1);
+  if(product.options.length === 3) Shopify.updateOptionsInSelector(2);
+  // When there is an update in the first dropdown.
+  $(".single-option-selector:eq(0)").change(function(){
+    Shopify.updateOptionsInSelector(1);
+    if(product.options.length === 3) Shopify.updateOptionsInSelector(2);
+    return true;
+  });
+  // When there is an update in the second dropdown.
+  $(".single-option-selector:eq(1)").change(function(){
+    if(product.options.length === 3) Shopify.updateOptionsInSelector(2);
+    return true;
+  });
+};
+
+{%- if product.available and product.options.size > 1 -%}
+	window.addEventListener('DOMContentLoaded',function(){
+      var $addToCartForm = $('form[action="/cart/add"]');
+      if(window.MutationObserver && $addToCartForm.length){
+        if(typeof observer === 'object' && typeof observer.disconnect === 'function'){
+          observer.disconnect();
+        }
+        var config = { childList: true, subtree: true };
+        var observer = new MutationObserver(function(){
+          observer.disconnect();
+        });
+        observer.observe($addToCartForm[0], config);
+      }
+      Shopify.linkOptionSelectors(JSON.parse(document.getElementById('ProductJson-{{ section.id }}').innerHTML));
+	});
+{%- endif -%}
+{%- if product.options.size == 1 -%}
+  window.addEventListener('DOMContentLoaded',function(){
+    {%- for variant in product.variants -%}
+      {%- unless variant.available -%}
+      //$('.single-option-selector option').filter(function(){ return $(this).html() === {{ variant.title | json }}; }).remove();
+      $(".swatch-element[data-value='{{ variant.title | escape }}']").addClass('soldout');
+      {%- endunless -%}
+    {%- endfor -%}
+    $('.single-option-selector').trigger('change');
+  });
+{%- endif -%}
+</script>
+{% capture schemaData %}
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org/",
+  "@type": "Product",
+  "name": "{{ product.title | escape }}",
+  "url": "{{ shop.url }}{{ product.url }}",
+  {%- if product.featured_image -%}
+    {%- assign image_size = product.featured_image.width | append: 'x' -%}
+    "image": [
+      "https:{% comment ls-rpl %}{{ product.featured_image.src | img_url: image_size }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: product.featured_image.src, img_url: image_size -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}"
+    ],
+  {%- endif -%}
+  "description": "{{ product.description | strip_html | escape }}",
+  {%- if current_variant.sku != blank -%}"sku": "{{current_variant.sku}}",{%- endif -%}
+  {%- if current_variant.barcode != blank -%}"mpn": "{{current_variant.barcode}}",{%- endif -%}
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ product.vendor | escape }}"
+  },
+  "offers": [
+    {%- for variant in product.variants -%}
+      {
+        "@type" : "Offer",
+        {%- if variant.sku != blank -%}
+          "sku": "{{ variant.sku }}",
+        {%- endif -%}
+        "availability" : "http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+        "price" : "{{ variant.price | divided_by: 100.00 }}",
+        "priceValidUntil": "{{ "now" | date: '%s' | plus: "86400" | date: "%Y-%m-%d %H:%M" }}",
+        "priceCurrency" : "{{ shop.currency }}",
+        "url" : "{{ shop.url }}{{ variant.url }}"
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+  {% if settings.reviews == 'shopify' %}
+  	{%- assign ratingCount = product.metafields.spr.reviews | split: '"reviewCount": "' | last | split: '"' | first | plus: 0 -%}
+		{%- assign ratingValue = product.metafields.spr.reviews | split: '"ratingValue": "' | last | split: '"' | first | plus: 0  -%}
+		{% if ratingCount > 0 and ratingValue > 0 %}
+			,"aggregateRating":{
+				"@type": "AggregateRating",
+				"ratingValue": "{{ratingValue}}",
+				"ratingCount": "{{ratingCount}}"
+			}
+		{%- endif -%}
+  {% elsif settings.reviews == 'loox' %}
+    ,"aggregateRating":{
+       "@type": "AggregateRating",
+       "ratingValue": "{{ product.metafields.loox.avg_rating }}",
+       "reviewCount": "{{ product.metafields.loox.num_reviews }}"
+    }
+  {%- endif -%}
+}
+</script>
+{% endcapture %}
+{{schemaData | strip_newlines | remove: "  " | remove: "	" }}
+{% schema %}
+{
+"name": "Product Descriptions Tabs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product Tabs"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_tabs",
+      "label": "Show Product Tabs?",
+      "default": true,
+    "info":"[set different tabs for each product](https://www.adornthemes.com/knowledge-base/how-to-set-meta-fields-to-display-different-data-for-products/)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Click on above back arrow to add tabs. Manage other product page options and design from Theme Settings -> Product Page"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "descriptions",
+      "name": "Default Descriptions",
+      "limit": 1,
+      "settings": [
+        {
+        "type":"text",
+        "id":"title",
+        "label":"Title",
+        "default":"Product Details"
+        }
+      ]
+    },
+    {
+      "type": "custom",
+      "name": "Global Text Block",
+      "limit": 3,
+      "settings": [
+        {
+        "type":"text",
+        "id":"title",
+        "label":"Title",
+        "default":"Custom Text"
+        },
+        {
+        "type": "richtext",
+        "id": "content",
+        "label": "Content"
+        }
+      ]
+    },
+    {
+      "type": "metafields",
+      "name": "Metafields Data",
+      "settings": [
+        {
+        "type":"text",
+        "id":"title",
+        "label":"Title",
+        "default":"Metafields"
+        },
+        {
+        "type": "textarea",
+        "id": "key",
+        "label": "Key Name",
+        "info":"[How to set metafields to display different data for each products](https://www.adornthemes.com/knowledge-base/how-to-set-meta-fields-to-display-different-data-for-products/)"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

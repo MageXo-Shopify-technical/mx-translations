@@ -1,69 +1,295 @@
-<!doctype html>
-<html
-  class="no-js{% if request.design_mode %} shopify-design-mode{% endif %}"
-  lang="{{ request.locale.iso_code }}"
->
-  <head>
-    {%- if settings.favicon != blank -%}
-      <link
-        rel="icon"
-        type="image/png"
-        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
-      >
+{%- capture LS_INPUT -%}<!doctype html>
+{% comment ls-rpl %}<html class="no-js" lang="{{ shop.locale }}" {% if settings.rtl %}dir="rtl"{% endif %}>{% endcomment %}<html class="no-js" lang="{%- render "ls-language" -%}" {% if settings.rtl %}dir="{%- render "ls-language-direction" -%}"{% endif %}>{% comment /ls-rpl %}{% endcomment %}
+<head>
+{%- render "ls-head" -%}
+  {%- capture seo_title -%}
+    {%- if request.page_type == 'search' and search.performed == true -%}
+      {{ 'general.search.heading' | t: count: search.results_count }}: {{ 'general.search.results_with_count' | t: terms: search.terms, count: search.results_count }}
+    {%- else -%}
+      {{ page_title }}
     {%- endif -%}
+    {%- if current_tags -%}{% comment ls-rpl %}{%- assign meta_tags = current_tags | join: ', ' -%}{% endcomment %}{%- capture LS_TAGS -%}{%- render "ls-tags", resource: nil, tags: current_tags -%}{%- endcapture -%}{%- assign LS_TAGS = LS_TAGS | split: "," -%}{%- assign meta_tags = LS_TAGS | join: ', ' -%}{% comment /ls-rpl %}{% endcomment %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}{%- endif -%}
+    {%- if current_page != 1 -%}&ndash; {{ 'general.meta.page' | t: page: current_page }}{%- endif -%}
+    {%- assign escaped_page_title = page_title | escape -%}
+    {%- unless escaped_page_title contains shop.name -%}&ndash; {{ shop.name }}{%- endunless -%}
+  {%- endcapture -%}
 
-    {% comment %} This a way to wait for main content to load when navigating to a new page so that the view transitions can work consistently {% endcomment %}
-    <link
-      rel="expect"
-      href="#MainContent"
-      blocking="render"
-      id="view-transition-render-blocker"
-    >
+  {%- capture metaTags -%}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="{{ settings.theme_clr }}">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="canonical" href="{{ canonical_url }}">
+  	<meta name="google-site-verification" content="Bd1u9pvj722sGVEa_JLqKMrjoFStj1_J0egkUheN6oU" />
 
-    {%- render 'meta-tags' -%}
-    {%- render 'stylesheets' -%}
-    {%- render 'fonts' -%}
-    {%- render 'scripts' -%}
-    {%- render 'theme-styles-variables' -%}
-    {%- render 'color-schemes' -%}
+  	<link rel="dns-prefetch" href="https://{{shop.domain}}" crossorigin>
+    <link rel="dns-prefetch" href="https://{{shop.permanent_domain}}" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.shopify.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.shopifycdn.com" crossorigin>
+  	<link rel="preconnect" href="https//fonts.shopifycdn.com/" crossorigin>
+    <link rel="preconnect" href="https//cdn.shopify.com" crossorigin>
 
-    {% if request.design_mode %}
-      {%- render 'theme-editor' -%}
-    {% endif %}
+    {%- if settings.favicon != blank -%}<link rel="shortcut icon" href="{% comment ls-rpl %}{{ settings.favicon | img_url: '32x32' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.favicon, img_url: '32x32' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}" type="image/png">{%- endif -%}
+    {%- if settings.favicon_retina != blank -%}<link rel="apple-touch-icon-precomposed" type="image/png" sizes="152x152" href="{% comment ls-rpl %}{{ settings.favicon_retina | img_url: '152x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.favicon_retina, img_url: '152x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %}">{%- endif -%}
 
-    {{ content_for_header }}
-  </head>
+  	<title>{{ seo_title }}</title>
+  	{%- if page_description -%}<meta name="description" content="{{ page_description | escape }}">{%- endif -%}
+  	{%- render 'social-meta-tags' -%}
+  {%- endcapture -%}
+  {{metaTags | strip_newlines | remove: "  " | remove: "	" }}
 
-  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
-    {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
-    <div id="header-group">
-      {% sections 'header-group' %}
-    </div>
+  {%- capture mainjs -%}
+      {% render 'head-css' %}
+      <link rel="preload" href="{{ 'jquery.min.js' | asset_url }}" as="script">
+      <link rel="preload" href="{{ 'vendor.min.js' | asset_url }}" as="script">
+      <script src="{{ 'jquery.min.js' | asset_url }}" defer="defer"></script>
+      <script>
+        var theme = {
+          strings: {
+            addToCart:{{ 'products.product.add_to_cart' | t | json }},soldOut:{{ 'products.product.sold_out' | t | json }},unavailable:{{ 'products.product.unavailable' | t | json }},showMore:{{ 'general.filters.show_more' | t | json }},showLess:{{ 'general.filters.show_less' | t | json }}
+          },
+          mlcurrency:{%- if settings.show_multiple_currencies and settings.currency_opt == 'script' -%}true{%- else -%}false{% endif %},moneyFormat:{{ shop.money_format | json }},currencyFormat:{{ settings.currency_format | json }},shopCurrency:{{ shop.currency | json }},autoCurrencies:{{ settings.auto_currencies }},money_currency_format:{{ shop.money_with_currency_format | strip_html | json }},money_format:{{ shop.money_format | strip_html | json }},
+          ajax_cart:{{settings.ajax_cart }},fixedHeader:{{settings.show_sticky_header }},animation:{{settings.enable_site_animation }},animationMobile:{{settings.site_animation_mobile }},searchresult:{{ 'general.search.all' | t | json }},wlAvailable:{{ 'products.wishlist.available' | t | json }},rtl:{{ settings.rtl }},days:{{ 'date_formats.short_names.days' | t | json }},hours:{{ 'date_formats.short_names.hours' | t | json }},minuts:{{ 'date_formats.short_names.minuts' | t | json }},seconds:{{ 'date_formats.short_names.seconds' | t | json }},
+        };
+        window.routes = {
+          predictive_search_url: '{{ routes.predictive_search_url }}',
+          search: "{{ routes.search_url }}",
+        };
+        document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+        window.lazySizesConfig = window.lazySizesConfig || {};
+        window.lazySizesConfig.loadMode = 1;
+        window.lazySizesConfig.expand = 10;
+        window.lazySizesConfig.expFactor = 1.5;
+        window.lazySizesConfig.loadHidden = false;
+        var Metatheme = {{shop.metafields.mytheme.optimal |json}},thm = 'Optimal', shpeml = '{{shop.email}}', dmn = window.location.hostname;
+        window.recentlyViewedIds = [];
+      </script>
+      <script>
+        window.isStorageSupported = function (type) {
+          if (window.self !== window.top) {
+            return false;
+          }
+          var checkKey = 'check';
+          var storage;
+          if (type === 'session') {
+            storage = window.sessionStorage;
+          }
+          if (type === 'local') {
+            storage = window.localStorage;
+          }
+          try {
+            storage.setItem(checkKey, '1');
+            storage.removeItem(checkKey);
+            return true;
+          } catch (error) {
+            return false;
+          }
+        };
 
-    <script
-      src="{{ 'critical.js' | asset_url }}"
-      type="module"
-      async
-      blocking="render"
-    ></script>
+        window.configStorage = {
+          hasSessionStorage: true,
+          hasLocalStorage: true,
+        };
 
-    <main
-      id="MainContent"
-      class="content-for-layout"
-      role="main"
-      data-page-transition-enabled="{{ settings.page_transition_enabled }}"
-      data-product-transition="{{ settings.transition_to_main_product }}"
-      data-template="{{ template }}"
-    >
-      {{ content_for_layout }}
-    </main>
+        window.configStorage.hasSessionStorage = window.isStorageSupported('session');
+        window.configStorage.hasLocalStorage = window.isStorageSupported('local');
 
-    {% sections 'footer-group' %}
+        if (window.configStorage.hasLocalStorage) {
+          var recentIds = window.localStorage.getItem('recently-viewed');
+          if (recentIds && typeof recentIds !== undefined) {
+            window.recentlyViewedIds = JSON.parse(recentIds);
+          }
+        }
+      </script>
+  	  <script src="{{ 'vendor.min.js' | asset_url }}" defer="defer"></script>
+  {%- endcapture -%}
+  {{mainjs | strip_newlines | remove: "  " | remove: "	" }}
 
-    {% render 'search-modal' %}
+  {%- comment -%}{{ content_for_header }}
 
-    {% if settings.quick_add or settings.mobile_quick_add %}
-      {% render 'quick-add-modal' %}
-    {% endif %}
-  </body>
-</html>
+  <!-- OrderLogic checkout restrictions ========================================= -->
+  {% include 'order-logic' %}
+{%- endcomment -%}
+  {%- render 'header-content' -%}
+
+  {%- if settings.show_language -%}
+	{% include 'weglot_hreftags' %}
+	{% include 'weglot_switcher' %}
+  {%- endif -%}
+
+  {{ 'default.css' | asset_url | stylesheet_tag }}
+  {{ 'custom.css' | asset_url | stylesheet_tag }}
+  {{ 'cookies.css' | asset_url | stylesheet_tag }}
+{% include "onvoard-initialize-head" %}
+
+{% if template == 'collection' %}
+  {% assign collection_handle = collection.handle %}
+  {% if collection.handle == "memorabilia" or collection.handle == "oktagon-71" or collection.handle == "eden" or collection.handle == "posters" or collection.handle == "authentic-pieces" or collection.handle == "signed-gloves" or collection.handle == "signed-jerseys" or collection.handle == "canvas" %}
+    <link rel="stylesheet" href="{{ 'collection-memorabilia.css' | asset_url }}" type="text/css">
+  {% endif %}
+{% endif %}
+
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "t403dbf05j");
+</script>
+</head>
+{%- capture snowonpage -%}{% if settings.sn-index %}index,{% endif %}{% if settings.sn-product %}product,{% endif %}{% if settings.sn-collection %}collection,{% endif %}{% if settings.sn-blog %}article,blog,{% endif %}{% if settings.sn-cart %}cart,{% endif %}{% if settings.sn-page %}page{% endif %}{%- endcapture -%}
+<body class="template-{{ template | split: '.' | first }}{% if settings.rtl %} rtl{% endif %}{% if settings.bodybg_img %} lazyload{% endif %}{% if settings.snow_effect and snowonpage contains request.page_type %} falling-snow {{settings.snow_style}}{% endif %}"
+	{%- if settings.bodybg_img %} data-bgset="{% include 'bgset', image: settings.bodybg_img %}" data-sizes="auto" data-parent-fit="cover" style="background-image:url('{% comment ls-rpl %}{{ settings.bodybg_img | img_url: '50x' }}{% endcomment %}{%- capture LS_IMG_URL -%}{%- render "ls-img-url", image: settings.bodybg_img, img_url: '50x' -%}{%- endcapture -%}{{ LS_IMG_URL }}{% comment /ls-rpl %}{% endcomment %});"{%- endif -%}>
+  <script>
+    let  cartErrorMessage = "{{ 'cart.general.not_enough_qty' | t: prd_title: product.title }}";
+  </script>
+	{%- if settings.enable_age_varification -%}{% include 'age-check' %}{%- endif -%}
+  	{%- if settings.layout_style == "boxedlayout" -%}<div class="layout-boxed">{%- endif -%}
+  		{%- if settings.top-information-bar and settings.info_bar_po == 'above' -%}{% section 'top-info-panel' %}{%- endif -%}
+  		{%- include 'header' -%}
+    	{%- if settings.top-information-bar and settings.info_bar_po == 'below' -%}{% section 'top-info-panel' %}{%- endif -%}
+		<main id="PageContainer" class="main-content {{ template | split: '.' | first }}" id="MainContent" role="main">{% capture ICART_FULL_PAGE_LAYOUT %}{{ content_for_layout }}{% endcapture %}{% include 'icart-variables', ICART_FULL_PAGE_LAYOUT: ICART_FULL_PAGE_LAYOUT %}</main>
+    	{%- section 'footer' -%}
+  	{%- if settings.layout_style == "boxedlayout" -%}</div>{%- endif -%}
+
+<!-- js -->
+<script src="{{ 'option_selection.js' | shopify_asset_url }}" defer="defer"></script>
+{%- if template.directory == 'customers' -%}<script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>{%- endif -%}
+{%- if content_for_layout contains 'data-stellar-background-ratio' -%}<script src="{{ 'stellar.js' | asset_url }}" defer></script>{%- endif -%}
+{%- if content_for_layout contains 'grid-masonary' -%}<script src="{{ 'masonry.js' | asset_url }}" defer="defer"></script>{%- endif -%}
+{%- if settings.show_multiple_currencies and settings.currency_opt == 'script' -%}
+  <script src="//cdn.shopify.com/s/javascripts/currencies.js" defer></script>
+  <script src="{{ "jquery.currencies.min.js" | asset_url }}" defer></script>
+{%- endif -%}
+{%- if settings.enable_site_animation -%}<script src="{{ 'wow.min.js' | asset_url }}" async></script>{%- endif -%}
+<script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+{%- render 'theme-modals' -%}
+{%- if settings.show_scroll -%}
+  <span id="scroll_top"  {% if settings.show_stt_mb %}class="small--hide"{% endif %} title="{{ 'general.accessibility.scroll_to_top_button' | t }}">
+  	{%- if settings.stt_style == "1" -%}{{ 'general.accessibility.scroll_to_top_button' | t }} <i class="at at-long-arrow-alt-right" aria-hidden="true"></i>{%- elsif settings.stt_style == "2" -%}<i class="at at-arw-up" aria-hidden="true"></i>{%- else -%}<i class="at at-chevron-up" aria-hidden="true"></i>{%- endif -%}
+  </span>
+{%- endif -%}
+<script src="{{ 'script-loader.js' | asset_url }}" defer></script>
+{% render 'cookies' %}
+<script src="{{ 'custom.js' | asset_url }}"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    let chackBar = setInterval(() => {
+        if ( typeof LocaleBar != "undefined") {
+          clearInterval(chackBar);
+                LocaleBar.fetch()
+                  .then(response => {
+                    return response
+                  })
+                  .then(data => {
+                    if (!data) {
+                      return;
+                    }
+                    // console.log(data)
+                    // if (!data) {
+                    //   jQuery.get(
+                    //     window.Shopify.routes.root
+                    //       + 'browsing_context_suggestions.json'
+                    //       + '?country[enabled]=true'
+                    //       + `&country[exclude]=${window.Shopify.country}`
+                    //       + '&language[enabled]=true'
+                    //       + `&language[exclude]=${window.Shopify.language}`
+                    //   ).then(backupData => {
+                    //     console.log(backupData)
+                    //     if (localStorage.getItem("popupData") == null || localStorage.getItem("popupData") === 'undefined') {
+                    //         localStorage.setItem('popupData', JSON.stringify(backupData));
+                    //     }
+                    //   });
+                    // }
+
+                    if (localStorage.getItem("popupData") == null) {
+                        localStorage.setItem('popupData', JSON.stringify(data));
+                    }
+                })
+        }
+    }, 1000);
+    document.querySelector('.popu_trigger').addEventListener('click', function(){
+      if(typeof window && window.$selector) {
+        window.$selector.push(["do", "markets-recommendations:show"]);
+      }
+      const langDataFromStorage = localStorage.getItem('popupData');
+      const langData = JSON.parse(langDataFromStorage && langDataFromStorage !== 'undefined' ? langDataFromStorage : '{}');
+      document.cookie = 'locale_selectors_selected' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      document.cookie = 'locale_bar_accepted' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      document.cookie = 'locale_bar_dismissed' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      LocaleBar.style.innerHTML = ".locale-bar__container{font-size:16px;outline:none;z-index:1000000}.locale-bar__content{align-items:flex-start;display:flex;justify-content:space-between;padding:1em}.locale-bar__message{margin:0;padding:0}.locale-bar__form{margin:0.5em 0 0 -0.3em;text-align:left}.locale-bar__selector{-moz-appearance:none !important;-webkit-appearance:none !important;appearance:none !important;background-color:#f4f4f4 !important;background-image:url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjUiPjxwYXRoIGZpbGw9IiM2NjYiIGQ9Ik0wIDBzMy40IDQuNCAzLjUgNC40QzMuNyA0LjQgNy4xIDAgNy4xIDBIMHoiLz48L3N2Zz4=\") !important;background-position:right 10px center !important;background-repeat:no-repeat !important;background-size:auto !important;border-radius:2px !important;border:0 !important;color:#333 !important;cursor:pointer !important;display:inline-block !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;margin:0.3em !important;max-width:100% !important;min-height:unset !important;min-width:unset !important;padding:0.3em 28px 0.3em 0.5em !important;text-indent:0.01px !important;text-overflow:\'\' !important;vertical-align:baseline !important;width:auto !important}.locale-bar__button{border:none !important;box-shadow:none !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;min-height:unset !important;min-width:unset !important;text-align:center !important;vertical-align:unset !important;width:auto !important;border:none;border-radius:2px;box-shadow:none;margin:0.3em;padding:0.3em 0.5em}.locale-bar__button:hover,.locale-bar__button:focus{border:none !important;box-shadow:none !important;min-width:unset !important;width:auto !important}.locale-bar__button:focus{outline:auto !important}.locale-bar__button:hover{box-shadow:inset 0 0 0 100px rgba(0,0,0,0.15)}.locale-bar__button--minimal{border:none !important;box-shadow:none !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;min-height:unset !important;min-width:unset !important;text-align:center !important;vertical-align:unset !important;width:auto !important;background:none !important;padding:0 !important;text-decoration:underline}.locale-bar__button--minimal:hover,.locale-bar__button--minimal:focus{border:none !important;box-shadow:none !important;min-width:unset !important;width:auto !important}.locale-bar__button--minimal:focus{outline:auto !important}.locale-bar__button--minimal:hover,.locale-bar__button--minimal:focus{background:none !important}.locale-bar__close-button{border:none !important;box-shadow:none !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;min-height:unset !important;min-width:unset !important;text-align:center !important;vertical-align:unset !important;width:auto !important;background:none !important;padding:0 !important;margin-left:1em;padding-top:2px}.locale-bar__close-button:hover,.locale-bar__close-button:focus{border:none !important;box-shadow:none !important;min-width:unset !important;width:auto !important}.locale-bar__close-button:focus{outline:auto !important}.locale-bar__close-button:hover,.locale-bar__close-button:focus{background:none !important}.recommendation-modal__container{box-shadow:0px 0px 1px rgba(0,0,0,0.3),0px 4px 4px 1px rgba(0,0,0,0.1);max-width:30em;position:fixed;left:50%;top:50%;transform:translate(-50%, -50%);width:calc(100% - 2em);z-index:1000000;border-radius:5px}.recommendation-modal__close-button-container{display:flex;justify-content:flex-end}.recommendation-modal__close-button{border:none !important;box-shadow:none !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;min-height:unset !important;min-width:unset !important;text-align:center !important;vertical-align:unset !important;width:auto !important;background:none !important;padding:0 !important;margin-right:10px;margin-top:10px}.recommendation-modal__close-button:hover,.recommendation-modal__close-button:focus{border:none !important;box-shadow:none !important;min-width:unset !important;width:auto !important}.recommendation-modal__close-button:focus{outline:auto !important}.recommendation-modal__close-button:hover,.recommendation-modal__close-button:focus{background:none !important}.recommendation-modal__content{display:flex;flex-direction:column;align-items:center;padding:0 2.5em 2.5em}@media (max-width: 750px){.recommendation-modal__content{padding:0 2em 2em}}.recommendation-modal__flag{padding-top:12px}.recommendation-modal__flag img{width:75px !important;height:48px !important}.recommendation-modal__message,.recommendation-modal__message--align-start{font-weight:normal !important;text-transform:none;margin:12px 0 25px !important;text-align:center;letter-spacing:normal;font-size:22px !important;line-height:1.3 !important}.recommendation-modal__message--align-start{align-self:flex-start}.recommendation-modal__message--bold{font-weight:bold !important}.recommendation-modal__benefits{width:100%}.recommendation-modal__benefits ul{margin:0 0 12px 0;padding-left:16px;font-size:16px}.recommendation-modal__benefits ul li{font-size:16px !important;line-height:1.4 !important;list-style-type:disc;margin-bottom:4px}.recommendation-modal__button{border:none !important;box-shadow:none !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;min-height:unset !important;min-width:unset !important;text-align:center !important;vertical-align:unset !important;width:auto !important;border:none;border-radius:4px;box-shadow:none;margin:0 !important;width:100% !important;height:52px !important;font-size:18px !important;box-sizing:border-box !important;padding:0 !important}.recommendation-modal__button:hover,.recommendation-modal__button:focus{border:none !important;box-shadow:none !important;min-width:unset !important;width:auto !important}.recommendation-modal__button:focus{outline:auto !important}.recommendation-modal__button:hover,.recommendation-modal__button:focus{cursor:pointer;width:100% !important}.recommendation-modal__button--minimal{border:none !important;box-shadow:none !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;min-height:unset !important;min-width:unset !important;text-align:center !important;vertical-align:unset !important;width:auto !important;background:none !important;padding:0 !important;margin-top:10px;text-decoration-line:underline;font-size:14px !important}.recommendation-modal__button--minimal:hover,.recommendation-modal__button--minimal:focus{border:none !important;box-shadow:none !important;min-width:unset !important;width:auto !important}.recommendation-modal__button--minimal:focus{outline:auto !important}.recommendation-modal__button--minimal:hover,.recommendation-modal__button--minimal:focus{background:none !important}.recommendation-modal__button--minimal:hover{cursor:pointer}.recommendation-modal__backdrop{background-color:rgba(0,0,0,0.3);height:100vh;left:0;position:fixed;top:0;width:100vw;z-index:999999}.recommendation-modal__selector--flag{-moz-appearance:none !important;-webkit-appearance:none !important;appearance:none !important;background-color:#f4f4f4 !important;background-image:url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjUiPjxwYXRoIGZpbGw9IiM2NjYiIGQ9Ik0wIDBzMy40IDQuNCAzLjUgNC40QzMuNyA0LjQgNy4xIDAgNy4xIDBIMHoiLz48L3N2Zz4=\") !important;background-position:right 10px center !important;background-repeat:no-repeat !important;background-size:auto !important;border-radius:2px !important;border:0 !important;color:#333 !important;cursor:pointer !important;display:inline-block !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;margin:0.3em !important;max-width:100% !important;min-height:unset !important;min-width:unset !important;padding:0.3em 28px 0.3em 0.5em !important;text-indent:0.01px !important;text-overflow:\'\' !important;vertical-align:baseline !important;width:auto !important;background-color:transparent !important;border:1px solid #babfc3 !important;border-radius:4px !important;width:100% !important;height:38px !important;margin:0 !important;padding-left:40px !important}.recommendation-modal__selector{-moz-appearance:none !important;-webkit-appearance:none !important;appearance:none !important;background-color:#f4f4f4 !important;background-image:url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjUiPjxwYXRoIGZpbGw9IiM2NjYiIGQ9Ik0wIDBzMy40IDQuNCAzLjUgNC40QzMuNyA0LjQgNy4xIDAgNy4xIDBIMHoiLz48L3N2Zz4=\") !important;background-position:right 10px center !important;background-repeat:no-repeat !important;background-size:auto !important;border-radius:2px !important;border:0 !important;color:#333 !important;cursor:pointer !important;display:inline-block !important;font-size:16px !important;height:auto !important;line-height:1.375 !important;margin:0.3em !important;max-width:100% !important;min-height:unset !important;min-width:unset !important;padding:0.3em 28px 0.3em 0.5em !important;text-indent:0.01px !important;text-overflow:\'\' !important;vertical-align:baseline !important;width:auto !important;background-color:transparent !important;border:1px solid #babfc3 !important;border-radius:4px !important;width:100% !important;height:38px !important;margin:0 !important}.recommendation-modal__selector-wrapper--flag{background-image:var(--bg-image);background-repeat:no-repeat;background-position:11px center;background-size:25px;background-color:#f4f4f4 !important;border-radius:4px !important;margin:0 0 12px 0}.recommendation-modal__selector-wrapper{background-color:#f4f4f4 !important;border-radius:4px !important;margin:0 0 12px 0}.recommendation-modal__form{margin:0;width:100%}.recommendation-modal__form button:last-of-type{margin-top:18px !important}\n"
+      LocaleBar.render(langData, JSON.parse("{\"colors\":{\"background\":\"#ffffff\",\"foreground\":\"#333333\",\"buttonBackground\":\"rgba(255, 210, 0, 1)\",\"buttonForeground\":\"#000000\",\"link\":\"#ffd100\"},\"layout\":{\"minimal\":false,\"variant\":\"modal\"},\"messages\":{\"cs\":{\"currency_and_language_suggestion\":\"Vypadá to, že jste v této zemi: {{ country }}. Chcete změnit jazyk a měnu?\",\"currency_suggestion\":\"Vypadá to, že jste v této zemi: {{ country }}. Chcete změnit měnu?\",\"country_and_language_suggestion\":\"Vypadá to, že se nacházíte v zemi: {{ country }}. Chcete změnit zemi a jazyk?\",\"country_suggestion\":\"Vypadá to, že se nacházíte v zemi: {{ country }}. Chcete změnit zemi?\",\"language_suggestion\":\"Vypadá to, že váš prohlížeč je nastaven na tento jazyk: {{ language }}. Chcete změnit jazyk?\",\"submit\":\"Změnit\"},\"de\":{\"currency_and_language_suggestion\":\"Anscheinend befindest du dich in {{ country }}. Möchtest du deine Sprache und Währung ändern?\",\"currency_suggestion\":\"Anscheinend befindest du dich in {{ country }}. Währung ändern?\",\"country_and_language_suggestion\":\"Anscheinend befindest du dich in {{ country }}. Land und Sprache wechseln?\",\"country_suggestion\":\"Anscheinend befindest du dich in {{ country }}. Land wechseln?\",\"language_suggestion\":\"Dein Browser ist anscheinend auf {{ language }} eingestellt. Sprache ändern?\",\"submit\":\"Ändern\"},\"en\":{\"currency_and_language_suggestion\":\"Looks like you’re in {{ country }}. Change language and currency?\",\"currency_suggestion\":\"Looks like you’re in {{ country }}. Change currency?\",\"country_and_language_suggestion\":\"Looks like you’re in {{ country }}. Change country and language?\",\"country_suggestion\":\"Looks like you’re in {{ country }}. Change country?\",\"language_suggestion\":\"Looks like your browser is set to {{ language }}. Change language?\",\"submit\":\"Change\"}}}"))
+
+      document.querySelector('.recommendation-modal__button--minimal').addEventListener('click', function newLocaleCodeShow(){
+        let checkForm = setInterval(() => {
+          if (document.querySelector(".recommendation-modal__form")) {
+              clearInterval(checkForm);
+              function changeLocation(){
+                let styles = window.getComputedStyle(document.querySelector('.recommendation-modal__selector-wrapper--flag'));
+                let image = styles.backgroundImage;
+                let url = image.slice(5, -2);
+                let urlParts = url.split('/');
+                let localePart = urlParts.slice(-1)[0];
+                let newLocaleCode = localePart.split('.')[0];
+                if (newLocaleCode != localStorage.getItem('localData')) {
+                    localStorage.removeItem('localData')
+                }
+              }
+
+              var ele = document.querySelector('.recommendation-modal__form')
+              if(ele.addEventListener){
+                  ele.addEventListener("submit", changeLocation, false);
+              }else if(ele.attachEvent){
+                  ele.attachEvent('onsubmit', changeLocation);
+              }
+                  }
+        }, 100);
+      })
+    })
+
+    let localizationCode = []
+    document.cookie.split(';').forEach(function(el) {
+          let [key,value] = el.split('=');
+          if (key == 'localization' && value != undefined && value != 'FR'){
+                localizationCode.push(value);
+                if (value == 'AT') {
+                  localStorage.setItem('localData', 'DE')
+                }else{
+                  localStorage.setItem('localData', value)
+                }
+          }
+    })
+
+  })
+</script>
+
+<script>
+  function updatePrice(){
+    var prices = document.querySelectorAll('.product-price');
+
+
+    if (!prices)return;
+
+    for (var each of prices){
+    each.innerText = each.innerText.replace(',00', '');
+    console.log('change format');
+    }
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+      if (window.location.href.indexOf("cs-cz") > -1){
+        setTimeout(updatePrice, 100);
+      }
+    });
+
+
+  </script>
+
+{% include "onvoard-appscripts" %}
+  {% include 'limitsify' %}
+	        {{'tiny-img-link-preloader.js' | asset_url | script_tag }}
+</body>
+</html>{%- endcapture -%}
+{%- render 'ls-output', input: LS_INPUT -%}

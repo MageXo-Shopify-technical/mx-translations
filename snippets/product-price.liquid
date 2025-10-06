@@ -1,0 +1,52 @@
+{% comment %} <!-- snippet/product-price.liquid --> {% endcomment %}
+{% if product.title %}
+{%- assign compare_at_price = product.compare_at_price -%}
+{%- assign price = product.price -%}
+
+{% comment %}<!-- Show min to max price -->{% endcomment %}
+{%- assign min_price = product.price_min -%}
+{%- assign max_price = product.price_max -%}
+{% comment %}<!-- End min to max price -->{% endcomment %}
+
+{%- assign price_varies = product.price_varies -%}
+{%- assign available = product.available -%}
+{% else %}
+{%- assign compare_at_price = 1999 -%}
+{%- assign price = 1999 -%}
+{%- assign price_varies = false -%}
+{%- assign available = true -%}
+{% endif %}
+{% if request.locale.root_url contains 'cs-cz' %}
+    {%- assign money_price = price | money_without_trailing_zeros -%}
+{% else %}
+    {%- assign money_price = price | money -%}
+{% endif %}
+
+{% comment %}<!-- Show min to max price -->{% endcomment %}
+{%- assign money_price_min = min_price | money -%}
+{%- assign money_price_max = max_price | money -%}
+{% comment %}<!-- End min to max price -->{% endcomment %}
+
+{% if compare_at_price > price %}
+  {% if price_varies %}
+    <span class="hidden_txt">{{ 'products.product.regular_price' | t }}</span>
+    <s class="pr_price regular" style="color: {{ color }};">{% if request.locale.root_url contains 'cs-cz' %}{{ compare_at_price | money_without_trailing_zeros }}{% else %}{{ compare_at_price | money }}{% endif %}</s>
+    <span class="pr_price pr_price_sale" style="color: {{ color }};">{{ money_price }}</span>
+  {% else %}
+    <span class="hidden_txt">{{ 'products.product.regular_price' | t }}</span>
+    <s class="pr_price regular" style="color: {{ color }};">{% if request.locale.root_url contains 'cs-cz' %}{{ compare_at_price | money_without_trailing_zeros }}{% else %}{{ compare_at_price | money }}{% endif %}</s>
+    <span class="pr_price pr_price_sale" style="color: {{ color }};">{{ money_price }}</span>
+  {% endif %}
+{% else %}
+  {% if price_varies %}
+        {% if settings.price_style == 'default' %}
+        	<span class="pr_price" style="color: {{ color }};">{% if settings.price_lbl %}{{settings.price_lbl_txt }}{% endif %} {{ money_price | replace: ',00', ' ' }}</span>
+		{% else %}
+			 <span class="pr_price" style="color: {{ color }};">{% if settings.price_lbl %}{{settings.price_lbl_txt }}{% endif %} {{ money_price_min }} - {{ money_price_max }}</span>
+		{% endif %}
+
+    {% else %}
+    <span class="hidden_txt">{{ 'products.product.regular_price' | t }}</span>
+    <span class="pr_price" style="color: {{ color }};">{{ money_price}}</span>
+  {% endif %}
+{% endif %}

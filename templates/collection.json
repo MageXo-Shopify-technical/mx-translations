@@ -6,228 +6,170 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
-    "section": {
-      "type": "section",
+    "banner": {
+      "type": "main-collection",
       "blocks": {
-        "text_tqQTNE": {
-          "type": "text",
-          "name": "Title",
+        "collections_reFFNt": {
+          "type": "collections",
           "settings": {
-            "text": "<p>{{ closest.collection.title }}</p>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "fw_title": "Collections",
+            "first_list": "",
+            "first_parent_title": "",
+            "first_parent_link": "shopify://collections/collector-s-cards",
+            "second_list": "apparel",
+            "second_parent_title": "Apparel",
+            "second_parent_link": "",
+            "third_list": "p-nsk",
+            "third_parent_title": "Men",
+            "third_parent_link": "",
+            "fourth_list": "women",
+            "fourth_parent_title": "Women",
+            "fourth_parent_link": "",
+            "fifth_list": "d-tsk",
+            "fifth_parent_title": "Kids",
+            "fifth_parent_link": "",
+            "sixth_list": "accessories",
+            "sixth_parent_title": "Accessories",
+            "sixth_parent_link": "",
+            "seventh_list": "fighters-collection-1",
+            "seventh_parent_title": "Fighter's collection",
+            "seventh_parent_link": "",
+            "eighth_list": "main-menu",
+            "eighth_parent_title": "Memorabilia",
+            "eighth_parent_link": "",
+            "nine_list": "",
+            "nine_parent_title": "Gift Cards",
+            "nine_parent_link": "shopify://collections/gift-cards-1",
+            "ten_list": "",
+            "ten_parent_title": "",
+            "ten_parent_link": ""
+          }
         },
-        "text_twGGkJ": {
-          "type": "text",
-          "name": "Description",
+        "0aa31692-dc98-486d-88d0-3ac0d2afb067": {
+          "type": "filter_by",
           "settings": {
-            "text": "{{ closest.collection.description }}",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "rte",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "title": "",
+            "dis_prod_cntl": false
+          }
+        },
+        "ab861e2d-39c2-4ef6-9940-846a584acc18": {
+          "type": "collections",
+          "disabled": true,
+          "settings": {
+            "fw_title": "Collections",
+            "first_list": "",
+            "first_parent_title": "Trading cards",
+            "first_parent_link": "shopify://collections/collector-s-cards",
+            "second_list": "",
+            "second_parent_title": "Memorabilia",
+            "second_parent_link": "shopify://collections/memorabilia",
+            "third_list": "",
+            "third_parent_title": "Gift cards",
+            "third_parent_link": "shopify://collections/gift-cards",
+            "fourth_list": "women",
+            "fourth_parent_title": "Women",
+            "fourth_parent_link": "shopify://collections/womens",
+            "fifth_list": "p-nsk",
+            "fifth_parent_title": "Men",
+            "fifth_parent_link": "shopify://collections/men-s",
+            "sixth_list": "d-tsk",
+            "sixth_parent_title": "Kids",
+            "sixth_parent_link": "shopify://collections/children",
+            "seventh_list": "kolekce",
+            "seventh_parent_title": "Fighters collection",
+            "seventh_parent_link": "shopify://collections/explore-all",
+            "eighth_list": "dopl-ky",
+            "eighth_parent_title": "Accessories",
+            "eighth_parent_link": "shopify://collections/accessories",
+            "nine_list": "",
+            "nine_parent_title": "Sale %",
+            "nine_parent_link": "shopify://collections/sales",
+            "ten_list": "",
+            "ten_parent_title": "",
+            "ten_parent_link": "shopify://collections/sales"
+          }
         }
       },
       "block_order": [
-        "text_tqQTNE",
-        "text_twGGkJ"
+        "collections_reFFNt",
+        "0aa31692-dc98-486d-88d0-3ac0d2afb067",
+        "ab861e2d-39c2-4ef6-9940-846a584acc18"
       ],
-      "name": "Collection heading",
+      "custom_css": [],
       "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 12,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "color_scheme": "scheme-1",
-        "background_media": "none",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_radius": 0,
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "padding-block-start": 48,
-        "padding-block-end": 48
+        "fullwidth": false,
+        "pad-desk": 55,
+        "pad-mbl": 15,
+        "page_header": true,
+        "show_banner": true,
+        "banner_position": "style2",
+        "bheight": 50,
+        "bheightipad": 200,
+        "bheightmob": 100,
+        "clr_bg": "#f2f2f2",
+        "clr_text": "#000000",
+        "des_position": "below",
+        "dis_prod_cnt": true,
+        "dis_grid_icn": false,
+        "enable_sorting": true,
+        "grid": 3,
+        "tablet-grid": 3,
+        "mobile-grid": 2,
+        "products_per_page": 9,
+        "pagination": "default",
+        "filters": true,
+        "sb_position": "left",
+        "addbg": true,
+        "flbgcl": "#f2f2f2",
+        "filter_bg": "flbg",
+        "flbdr": "#dddddd",
+        "tf_h": 30,
+        "filter_shadow": true,
+        "bx_ttl": 17,
+        "bx_ttlw": "fwsb",
+        "bx_tcase": "ttc",
+        "bx_ttlc": "#000000",
+        "opt": 15,
+        "optcase": "ttc",
+        "floptcl": "#000000",
+        "catlinkhv": "#ffd100",
+        "catlinkbd": "#eeeeee",
+        "fclr_size": "medium",
+        "fclr_style": "rounded",
+        "actclr": "#ffd100",
+        "flcolumn": "",
+        "act_fltxt": "#000000",
+        "act_flbg": "#ffffff"
       }
     },
-    "main": {
-      "type": "main-collection",
-      "blocks": {
-        "filters": {
-          "type": "filters",
-          "static": true,
-          "settings": {
-            "enable_filtering": true,
-            "filter_style": "horizontal",
-            "filter_width": "centered",
-            "text_label_case": "default",
-            "show_swatch_label": false,
-            "show_filter_label": false,
-            "enable_sorting": true,
-            "enable_grid_density": true,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "padding-block-start": 8,
-            "padding-block-end": 8,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0,
-            "facets_margin_bottom": 8,
-            "facets_margin_right": 20
-          },
-          "blocks": {}
-        },
-        "product-card": {
-          "type": "_product-card",
-          "static": true,
-          "settings": {
-            "product_card_gap": 4,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "card-gallery": {
-              "type": "_product-card-gallery",
-              "settings": {
-                "image_ratio": "adapt",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_title_4nY4eT": {
-              "type": "product-title",
-              "name": "t:names.product_title",
-              "settings": {
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 4,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "price_EzJzMm": {
-              "type": "price",
-              "settings": {
-                "show_sale_price_first": true,
-                "show_installments": false,
-                "show_tax_info": false,
-                "type_preset": "h6",
-                "width": "100%",
-                "alignment": "left",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "color": "var(--color-foreground)",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "card-gallery",
-            "product_title_4nY4eT",
-            "price_EzJzMm"
-          ]
-        }
-      },
+    "newsletter_w7pTXc": {
+      "type": "newsletter",
+      "name": "6 - Newsletter",
       "settings": {
-        "layout_type": "grid",
-        "product_card_size": "medium",
-        "mobile_product_card_size": "small",
-        "product_grid_width": "centered",
-        "full_width_on_mobile": true,
-        "columns_gap_horizontal": 16,
-        "columns_gap_vertical": 24,
-        "padding-inline-start": 0,
-        "padding-inline-end": 0,
-        "color_scheme": "scheme-1",
-        "padding-block-start": 0,
-        "padding-block-end": 32
+        "title": "Newsletter",
+        "subtitle": "Sign up to stay in the loop. Receive updates, access to exclusive deals, and more.",
+        "top-offeset": "none",
+        "section_width": true,
+        "sec_bg_clr": "#fafafa",
+        "style": "style1",
+        "hd_fs": 18,
+        "hd_ls": 2,
+        "hd_fs_m": 15,
+        "txt_fs": 13,
+        "txt_fs_m": 12,
+        "text_clr": "#000000",
+        "input_bg": "#ffffff",
+        "input_text": "#000000",
+        "input_btn": "#000000",
+        "input_btn_text": "#ffffff"
       }
     }
   },
   "order": [
-    "section",
-    "main"
+    "banner",
+    "newsletter_w7pTXc"
   ]
 }

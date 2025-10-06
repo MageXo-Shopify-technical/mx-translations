@@ -1,0 +1,131 @@
+{% if section.settings.show_recently_products == true %}
+  {{ 'recently-viewed.css' | asset_url | stylesheet_tag }}
+
+  <recently-viewed
+    class='recently-viewed recent-product mb30'
+    id='{{ section.id }}'
+    data-pr='{{ product.handle | handleize }}'
+    data-section-id='{{ section.id }}'
+    data-section-type='carousel'
+  >
+    <div class='content-indent small'>
+      <div class='{% if settings.product_latyout != "style6" %}page-width{% if settings.product_fullwidth %} fullwidth{% endif %}{% endif %}'>
+        {%- if section.settings.recently_title != blank or section.settings.recently_sub_title != blank -%}
+          <div class='recently-viewed__head hidden sec-ttl {{ settings.title_align}}'>
+            <h3 class='h3'>{{ section.settings.recently_title | escape }}</h3>
+            {%- if section.settings.recently_sub_title != blank -%}
+              <span>{{ section.settings.recently_sub_title }}</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+        <div id='products-{{ section.id }}' class='recently-viewed__content'>
+          <div id='RecentlyViewed-{{ section.id }}'></div>
+
+          {%- if settings.product_latyout == 'style6' -%}
+            <div id='pr_slider-{{ section.id }}' class='grid cl_clm'></div>
+          {%- else -%}
+            <div
+              id='pr_slider-{{ section.id }}'
+              class='grid-products carousel arwOut'
+              data-slick='{"slidesToShow": {{ section.settings.grid }},"slidesToScroll": 1, {%- if settings.rtl -%}"rtl": true,{%- endif -%} "infinite": true, "responsive":[{"breakpoint": 1024,"settings":{"slidesToShow": {{ section.settings.tablet-grid }} }},{"breakpoint": 767,"settings":{"slidesToShow":{{ section.settings.mobile-grid }} }} ]}'
+            ></div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </recently-viewed>
+
+  <script src='{{ 'recently-viewed.js' | asset_url }}' defer='defer'></script>
+
+  {% comment %}
+    <script>
+      window.addEventListener('DOMContentLoaded',function(){
+         	var rcCookie = "recentproducts",
+           		pr = "{{ product.handle | handleize }}";
+             if($.cookie(rcCookie) == null){
+      		var str = pr;
+             } else {
+               	var ctrItems = String($.cookie(rcCookie)).split("+");
+              if(ctrItems.length < {{section.settings.recently_pr_limit | plus: 1}}){
+                 	if($.cookie(rcCookie).indexOf(pr) == -1) {
+         	        	var str = pr + '+' + $.cookie(rcCookie);
+             		}
+             	} else {
+                   	if($.cookie(rcCookie).indexOf(pr) == -1) {
+         	        	var str = pr + '+' + ctrItems.slice(0, -1).join("+");
+             		}
+             	}
+      	}
+      	$.cookie(rcCookie, str, {expires:1, path:'/'});
+
+        var crproduct = {{ product.handle | json }};
+        $.ajax({
+             	url: '/collections/all/'+$.cookie(rcCookie)+'__pr='+crproduct+'?view=prlist',
+                 dataType: 'html',
+                 type: 'GET',
+                 success: function(data) {
+                 	if($(data).find('.grid_bx').length){
+                     	$('#pr_slider-{{ section.id }}').html(data);
+                     } else {
+      				          $('.recent-product').hide();
+                     }
+                 },
+                 error: function(data) {
+      			        console.log('ajax error');
+                 },
+                 complete: function() {
+                 	$('#pr_slider-{{ section.id }}').slick('refresh');
+                     $(theme.init);
+                 }
+             });
+      });
+    </script>
+  {% endcomment %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Recently Viewed Products",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Recently viewed products are only visible when browsing outside of the editor"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recently_products",
+      "label": "Show Recently products",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "recently_autoplay",
+      "label": "Carousel Autoplay",
+      "default": true
+    },
+    {
+      "id": "recently_title",
+      "type": "text",
+      "label": "Section Title",
+      "default": "Recently Viewed Products"
+    },
+    {
+      "id": "recently_sub_title",
+      "type": "text",
+      "label": "Section Sub title"
+    },
+    {
+      "type": "text",
+      "id": "recently_pr_limit",
+      "label": "Number of Product to Show",
+      "default": "6"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recently Viewed Products",
+      "category": "Products"
+    }
+  ]
+}
+{% endschema %}
